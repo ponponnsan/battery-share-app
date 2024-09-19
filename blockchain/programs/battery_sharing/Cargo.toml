@@ -1,0 +1,12 @@
+[package]
+name = "battery_sharing"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+solana-program = "=1.18.1"
+
+[lib]
+name = "battery_sharing"
+crate-type = ["cdylib", "lib"]
+
