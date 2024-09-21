@@ -12,10 +12,13 @@ app.use(express.json()); // リクエストボディをJSONで受け取るため
 
 // 1. Solana の設定
 const SOLANA_RPC_URL = "http://127.0.0.1:8899";
-const secretKeyPath = "/Users/suhara_yuka/.config/solana/id.json";
 //const SOLANA_RPC_URL_TEST = "https://api.testnet.solana.com"; // Testnet
 // 2. ファイルから秘密鍵を読み込む
-const secretKeyString = fs.readFileSync(secretKeyPath, 'utf8');
+const SECRET_KEY_PATH = process.env.SECRET_KEY_PATH;
+if (!SECRET_KEY_PATH) {
+  throw new Error('SECRET_KEY_PATH is not set in the environment variables');
+}
+const secretKeyString = fs.readFileSync(SECRET_KEY_PATH, 'utf8');
 const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
 
 // 3. Keypairオブジェクトを作成
