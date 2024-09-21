@@ -68,16 +68,17 @@ app.get('/invoke-program', async (_req: Request, res: Response) => {
   }
 });
 
-// 支払いAPI
-app.post('/send-payment', async (req: Request, res: Response) => {
+// 管理側への支払いAPI
+app.post('/send-to-agent', async (req: Request, res: Response) => {
+  const agentAddress = '3TMk4asz5EA5RS781apWGBABVvLFKXAUqVUiumDnBQ66'; // TODO: 管理側のアドレスを設定
   try {
-    const { recipient, amount } = req.body;
+    const { amount } = req.body;
 
-    if (!recipient || !amount) {
-      return res.status(400).json({ success: false, message: "受信者と金額が必要です" });
+    if (!amount) {
+      return res.status(400).json({ success: false, message: "金額が必要です" });
     }
 
-    const recipientPublicKey = new PublicKey(recipient);
+    const recipientPublicKey = new PublicKey(agentAddress);
     const lamports = Math.floor(amount * 1e9); // SOLをlamportsに変換 (1 SOL = 1e9 lamports)
 
     // トランザクションの作成
