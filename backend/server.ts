@@ -21,6 +21,9 @@ const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
 // 3. Keypairオブジェクトを作成
 const payer = Keypair.fromSecretKey(secretKey);
 
+// TODO: 管理側のアドレスを設定
+const agentAddress = '3TMk4asz5EA5RS781apWGBABVvLFKXAUqVUiumDnBQ66';
+
 // これでpayerはローカルのSolanaウォレットのKeypairを使っています。
 console.log('Payer public key:', payer.publicKey.toString());
 const PROGRAM_ID = process.env.SOLANA_PROGRAM_ID;
@@ -70,7 +73,6 @@ app.get('/invoke-program', async (_req: Request, res: Response) => {
 
 // 管理側への支払いAPI
 app.post('/send-to-agent', async (req: Request, res: Response) => {
-  const agentAddress = '3TMk4asz5EA5RS781apWGBABVvLFKXAUqVUiumDnBQ66'; // TODO: 管理側のアドレスを設定
   try {
     const { amount } = req.body;
 
@@ -79,6 +81,60 @@ app.post('/send-to-agent', async (req: Request, res: Response) => {
     }
 
     const recipientPublicKey = new PublicKey(agentAddress);
+    const lamports = Math.floor(amount * 1e9); // SOLをlamportsに変換 (1 SOL = 1e9 lamports)
+
+    // トランザクションの作成
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: payer.publicKey,
+        toPubkey: recipientPublicKey,
+        lamports,
+      })
+    );
+
+    // トランザクションに署名して送信
+    const signature = await connection.sendTransaction(transaction, [payer]);
+
+    // トランザクションの確認を待つ
+    const confirmation = await connection.confirmTransaction(signature);
+
+    if (confirmation.value.err) {
+      // トランザクションが失敗した場合
+      res.status(400).json({ success: false, message: "トランザクションが失敗しました", error: confirmation.value.err });
+      return;
+    }
+
+    // トランザクションの詳細を取得
+    const txInfo = await connection.getTransaction(signature, { commitment: "confirmed" });
+
+    if (txInfo?.meta?.logMessages) {
+      res.json({ success: true, message: "支払いが成功しました", transactionId: signature });
+    } else {
+      res.status(500).json({ success: false, message: "トランザクションログの取得に失敗しました" });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: "サーバーエラーが発生しました", error: (error as Error).message });
+  }
+});
+
+// 配送者への支払いAPI
+app.post('/send-to-carrier', async (req: Request, res: Response) => {
+  try {
+    const { address, amount } = req.body;
+
+    if (!address || !amount) {
+      return res.status(400).json({ success: false, message: "受信者アドレスと金額が必要です" });
+    }
+
+    // 受信者のアドレスが有効かどうかを確認
+    let recipientPublicKey: PublicKey;
+    try {
+      recipientPublicKey = new PublicKey(address);
+    } catch (error) {
+      return res.status(400).json({ success: false, message: "無効な受信者アドレスです" });
+    }
+
     const lamports = Math.floor(amount * 1e9); // SOLをlamportsに変換 (1 SOL = 1e9 lamports)
 
     // トランザクションの作成
