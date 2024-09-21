@@ -1,4 +1,4 @@
-import { Connection, Keypair, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
+import { Connection, Keypair, PublicKey, Transaction, TransactionInstruction, SystemProgram } from '@solana/web3.js';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
@@ -8,10 +8,12 @@ dotenv.config();
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // リクエストボディをJSONで受け取るため
 
-// Solana の設定
+// 1. Solana の設定
 const SOLANA_RPC_URL = "http://127.0.0.1:8899";
 const secretKeyPath = "/Users/suhara_yuka/.config/solana/id.json";
+//const SOLANA_RPC_URL_TEST = "https://api.testnet.solana.com"; // Testnet
 // 2. ファイルから秘密鍵を読み込む
 const secretKeyString = fs.readFileSync(secretKeyPath, 'utf8');
 const secretKey = Uint8Array.from(JSON.parse(secretKeyString));
@@ -57,6 +59,53 @@ app.get('/invoke-program', async (_req: Request, res: Response) => {
 
     if (txInfo?.meta?.logMessages) {
       res.json({ success: true, message: txInfo.meta.logMessages.join('\n') });
+    } else {
+      res.status(500).json({ success: false, message: "トランザクションログの取得に失敗しました" });
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: "サーバーエラーが発生しました", error: (error as Error).message });
+  }
+});
+
+// 支払いAPI
+app.post('/send-payment', async (req: Request, res: Response) => {
+  try {
+    const { recipient, amount } = req.body;
+
+    if (!recipient || !amount) {
+      return res.status(400).json({ success: false, message: "受信者と金額が必要です" });
+    }
+
+    const recipientPublicKey = new PublicKey(recipient);
+    const lamports = Math.floor(amount * 1e9); // SOLをlamportsに変換 (1 SOL = 1e9 lamports)
+
+    // トランザクションの作成
+    const transaction = new Transaction().add(
+      SystemProgram.transfer({
+        fromPubkey: payer.publicKey,
+        toPubkey: recipientPublicKey,
+        lamports,
+      })
+    );
+
+    // トランザクションに署名して送信
+    const signature = await connection.sendTransaction(transaction, [payer]);
+
+    // トランザクションの確認を待つ
+    const confirmation = await connection.confirmTransaction(signature);
+
+    if (confirmation.value.err) {
+      // トランザクションが失敗した場合
+      res.status(400).json({ success: false, message: "トランザクションが失敗しました", error: confirmation.value.err });
+      return;
+    }
+
+    // トランザクションの詳細を取得
+    const txInfo = await connection.getTransaction(signature, { commitment: "confirmed" });
+
+    if (txInfo?.meta?.logMessages) {
+      res.json({ success: true, message: "支払いが成功しました", transactionId: signature });
     } else {
       res.status(500).json({ success: false, message: "トランザクションログの取得に失敗しました" });
     }
