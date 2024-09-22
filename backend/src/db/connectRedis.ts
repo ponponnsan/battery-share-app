@@ -1,35 +1,42 @@
-import { createClient } from "redis";
+import { createClient, RedisClientType } from "redis";
 
-async function connectRedis() {
-  // Redisクライアントを作成
-  const client = createClient({
-    url: "redis://localhost:6379",
-  });
+class RedisService {
+  private client: RedisClientType;
 
-  // エラーハンドリング
-  client.on("error", (err: Error) => {
-    console.error("Redis error:", err);
-  });
+  constructor() {
+    this.client = createClient({
+      url: "redis://localhost:6379", // RedisのURL
+    });
 
-  try {
-    // Redisサーバーに接続
-    await client.connect();
+    this.client.on("error", (err: Error) => {
+      console.error("Redis error:", err);
+    });
+  }
+
+  // Redisとの接続を開始するメソッド
+  public async connect(): Promise<void> {
+    await this.client.connect();
     console.log("Connected to Redis");
+  }
 
-    // Redisにデータをセット
-    await client.set("key", "value");
-    console.log('Set key "key" with value "value"');
+  // データをセットするメソッド
+  public async set(key: string, value: string): Promise<void> {
+    await this.client.set(key, value);
+    console.log(`Set key "${key}" with value "${value}"`);
+  }
 
-    // Redisからデータを取得
-    const value: string | null = await client.get("key");
-    console.log('Get key "key":', value);
-  } catch (err) {
-    console.error("Error:", err);
-  } finally {
-    // Redisクライアントを終了
-    await client.quit();
+  // データを取得するメソッド
+  public async get(key: string): Promise<string | null> {
+    const value = await this.client.get(key);
+    console.log(`Get key "${key}": ${value}`);
+    return value;
+  }
+
+  // 接続を閉じるメソッド
+  public async disconnect(): Promise<void> {
+    await this.client.quit();
+    console.log("Disconnected from Redis");
   }
 }
 
-// 関数を呼び出し
-connectRedis();
+export default RedisService;
