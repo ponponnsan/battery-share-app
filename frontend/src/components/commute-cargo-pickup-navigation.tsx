@@ -1,0 +1,83 @@
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { ArrowLeft, Clock, MapPin, Navigation, Phone } from 'lucide-react';
+import { useState } from 'react';
+
+const CommuteCargoPickupNavigation = () => {
+  const [estimatedTime, setEstimatedTime] = useState('15 min');
+  const [distance, setDistance] = useState('3.2 km');
+
+  // Mock pickup details
+  const pickupDetails = {
+    address: '1-1-2 Otemachi, Chiyoda-ku, Tokyo',
+    customerName: 'Tanaka Yuki',
+    phoneNumber: '090-1234-5678',
+  };
+
+  const handleArrived = () => {
+    console.log('Driver has arrived at pickup location');
+    // Here you would typically handle the arrival logic
+  };
+
+  return (
+    <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
+      <CardHeader className="bg-red-500 text-white flex items-center p-4">
+        <ArrowLeft className="h-6 w-6 mr-4" />
+        <h2 className="text-xl font-bold flex-grow">Navigate to Pickup</h2>
+      </CardHeader>
+      <CardContent className="p-4 flex-grow flex flex-col">
+        <div className="bg-gray-100 rounded-lg p-4 mb-4">
+          <h3 className="font-semibold mb-2 flex items-center">
+            <MapPin className="h-5 w-5 mr-2 text-red-500" />
+            Pickup Location
+          </h3>
+          <p>{pickupDetails.address}</p>
+        </div>
+
+        <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
+          {/* This would be replaced with an actual map component */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <p className="text-gray-500">Map View</p>
+          </div>
+        </div>
+
+        <div className="bg-blue-100 rounded-lg p-4 mb-4">
+          <div className="flex justify-between items-center mb-2">
+            <div className="flex items-center">
+              <Navigation className="h-5 w-5 mr-2 text-blue-500" />
+              <span className="font-semibold">Distance</span>
+            </div>
+            <span>{distance}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <Clock className="h-5 w-5 mr-2 text-blue-500" />
+              <span className="font-semibold">ETA</span>
+            </div>
+            <span>{estimatedTime}</span>
+          </div>
+        </div>
+
+        <div className="bg-green-100 rounded-lg p-4 mb-4">
+          <h3 className="font-semibold mb-2">Customer Details</h3>
+          <p>{pickupDetails.customerName}</p>
+          <div className="flex items-center mt-2">
+            <Phone className="h-5 w-5 mr-2 text-green-500" />
+            <a href={`tel:${pickupDetails.phoneNumber}`} className="text-blue-500 underline">
+              {pickupDetails.phoneNumber}
+            </a>
+          </div>
+        </div>
+
+        <Button 
+          onClick={handleArrived}
+          className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
+        >
+          I've Arrived
+        </Button>
+      </CardContent>
+    </Card>
+  );
+};
+
+export default CommuteCargoPickupNavigation;
