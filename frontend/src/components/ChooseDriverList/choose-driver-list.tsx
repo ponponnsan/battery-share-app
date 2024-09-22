@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ArrowLeft } from 'lucide-react';
 import DriverCard from './DriverCard';
 
 const ChooseDriverList = () => {
@@ -13,7 +12,6 @@ const ChooseDriverList = () => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="bg-red-500 text-white flex items-center p-4">
-        <ArrowLeft className="h-6 w-6 mr-4" />
         <h2 className="text-xl font-bold flex-grow">Choose a Driver</h2>
       </CardHeader>
       <CardContent className="p-4">
