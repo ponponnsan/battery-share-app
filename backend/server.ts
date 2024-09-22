@@ -3,12 +3,16 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import * as fs from 'fs';
+import RedisService from './src/db/connectRedis';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json()); // リクエストボディをJSONで受け取るため
+
+// RedisServiceのインスタンスを作成
+const redisService = new RedisService();
 
 // 1. Solana の設定
 const SOLANA_RPC_URL = "http://127.0.0.1:8899";
@@ -75,6 +79,10 @@ app.get('/invoke-program', async (_req: Request, res: Response) => {
 });
 
 // 管理側への支払いAPI
+/**
+ * Usage:
+ * curl -X POST -H "Content-Type: application/json" -d '{ "amount": 0.5 }' http://localhost:3001/send-to-agent
+ */
 app.post('/send-to-agent', async (req: Request, res: Response) => {
   try {
     const { amount } = req.body;
@@ -122,6 +130,10 @@ app.post('/send-to-agent', async (req: Request, res: Response) => {
 });
 
 // 配送者への支払いAPI
+/**
+ * Usage:
+ * curl -X POST -H "Content-Type: application/json" -d '{ "address": "3TMk4asz5EA5RS781apWGBABVvLFKXAUqVUiumDnBQ66", "amount": 0.5 }' http://localhost:3001/send-to-carrier
+ */
 app.post('/send-to-carrier', async (req: Request, res: Response) => {
   try {
     const { address, amount } = req.body;
@@ -172,6 +184,65 @@ app.post('/send-to-carrier', async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ success: false, message: "サーバーエラーが発生しました", error: (error as Error).message });
+  }
+});
+
+// Redisにデータをセット
+/**
+ * Usage:
+ * curl -X POST -H "Content-Type: application/json" -d '{"key": "exampleKey", "value": "exampleValue"}' http://localhost:3001/set-redis
+ */
+app.post('/set-redis', async (req: Request, res: Response) => {
+  try {
+    // リクエストからデータを取得
+    const { key, value } = req.body;
+
+    // keyとvalueが提供されていない場合のエラーハンドリング
+    if (!key || !value) {
+      return res.status(400).json({ success: false, message: 'キーと値の両方が必要です' });
+    }
+
+    // Redisに接続してデータをセット
+    await redisService.connect();
+    await redisService.set(key, value);
+
+    // 成功時のレスポンス
+    res.status(200).json({ success: true, message: `キー "${key}" に値 "${value}" を保存しました` });
+
+    // Redisから切断
+    await redisService.disconnect();
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: 'サーバーエラーが発生しました', error: (error as Error).message });
+  }
+});
+
+// Redisからデータを取得
+/**
+ * Usage:
+ * curl -X GET "http://localhost:3001/get-redis?key=exampleKey"
+ */
+app.get('/get-redis', async (req: Request, res: Response) => {
+  try {
+    const { key } = req.query;
+
+    if (!key) {
+      return res.status(400).json({ success: false, message: 'キーが必要です' });
+    }
+
+    await redisService.connect();
+    const value = await redisService.get(key as string);
+
+    if (value) {
+      res.status(200).json({ success: true, key, value });
+    } else {
+      res.status(404).json({ success: false, message: `キー "${key}" に対応するデータが見つかりませんでした` });
+    }
+
+    await redisService.disconnect();
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ success: false, message: 'サーバーエラーが発生しました', error: (error as Error).message });
   }
 });
 
