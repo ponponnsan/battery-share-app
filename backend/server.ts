@@ -79,6 +79,10 @@ app.get('/invoke-program', async (_req: Request, res: Response) => {
 });
 
 // 管理側への支払いAPI
+/**
+ * Usage:
+ * curl -X POST -H "Content-Type: application/json" -d '{ "amount": 0.5 }' http://localhost:3001/send-to-agent
+ */
 app.post('/send-to-agent', async (req: Request, res: Response) => {
   try {
     const { amount } = req.body;
@@ -126,6 +130,10 @@ app.post('/send-to-agent', async (req: Request, res: Response) => {
 });
 
 // 配送者への支払いAPI
+/**
+ * Usage:
+ * curl -X POST -H "Content-Type: application/json" -d '{ "address": "3TMk4asz5EA5RS781apWGBABVvLFKXAUqVUiumDnBQ66", "amount": 0.5 }' http://localhost:3001/send-to-carrier
+ */
 app.post('/send-to-carrier', async (req: Request, res: Response) => {
   try {
     const { address, amount } = req.body;
