@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ArrowLeft, Car, Clock, MapPin, RotateCcw, Star } from 'lucide-react';
+import { Car, Clock, MapPin, RotateCcw, Star } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const DriverDetailsView = () => {
@@ -14,7 +14,6 @@ const DriverDetailsView = () => {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="bg-red-500 text-white flex items-center p-4">
-        <ArrowLeft className="h-6 w-6 mr-4" />
         <h2 className="text-xl font-bold flex-grow">Driver Details</h2>
         <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
           <img src="/api/placeholder/40/40" alt="Profile" className="w-full h-full object-cover" />

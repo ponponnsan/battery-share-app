@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Camera, Car, Clock, MapPin, Package, Upload, User } from 'lucide-react';
+import { Camera, Car, Clock, MapPin, Package, Upload, User } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -43,7 +43,6 @@ const CommuteCargaFullDriverRegistration = () => {
   return (
     <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
       <CardHeader className="bg-red-500 text-white flex items-center p-4">
-        <ArrowLeft className="h-6 w-6 mr-4" />
         <h2 className="text-xl font-bold flex-grow">Driver Registration</h2>
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col overflow-y-auto">
