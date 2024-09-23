@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, Package, Clock, User, Phone, MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import Map from "@/components/maps/google-map";
 
 const CommuteCargaUserDeliveryProgress = () => {
   const [status, setStatus] = useState('In Transit');
@@ -16,6 +18,12 @@ const CommuteCargaUserDeliveryProgress = () => {
     pickupLocation: '1-1-2 Otemachi, Chiyoda-ku, Tokyo',
     deliveryLocation: '2-1-1 Nihonbashi, Chuo-ku, Tokyo',
   };
+
+  // Mock vehicles details
+  const vehicles = [
+    { lat: 35.6762, lng: 139.6503 },
+    { lat: 35.6895, lng: 139.6917 },
+  ];
 
   // Simulating status updates
   useEffect(() => {
@@ -44,10 +52,7 @@ const CommuteCargaUserDeliveryProgress = () => {
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col">
         <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
-          {/* This would be replaced with an actual map component */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-gray-500">Live Map View</p>
-          </div>
+          <Map vehicles={vehicles} />
         </div>
 
         <div className="bg-blue-100 rounded-lg p-4 mb-4">

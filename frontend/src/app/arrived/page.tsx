@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Clock, MapPin, Navigation, Package, Phone } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
+import Map from "@/components/maps/google-map";
 
 const CommuteCargaDeliveryNavigation = () => {
   const [estimatedTime, setEstimatedTime] = useState('25 min');
@@ -17,6 +18,13 @@ const CommuteCargaDeliveryNavigation = () => {
     phoneNumber: '090-9876-5432',
     cargoDescription: 'Medium-sized package, handle with care',
   };
+
+  // Mock vehicles details
+  const vehicles = [
+    { lat: 35.6762, lng: 139.6503 },
+    { lat: 35.6895, lng: 139.6917 },
+  ];
+
 
   const handleDelivered = () => {
     console.log('Cargo delivered successfully');
@@ -39,10 +47,7 @@ const CommuteCargaDeliveryNavigation = () => {
         </div>
 
         <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
-          {/* This would be replaced with an actual map component */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-gray-500">Map View</p>
-          </div>
+         <Map vehicles={vehicles} />
         </div>
 
         <div className="bg-blue-100 rounded-lg p-4 mb-4">
