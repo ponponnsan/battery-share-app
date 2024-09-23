@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Clock, MapPin, Navigation, Phone } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
+import Map from "@/components/maps/google-map";
 
 const CommuteCargoPickupNavigation = () => {
   const [estimatedTime, setEstimatedTime] = useState('15 min');
@@ -21,6 +22,12 @@ const CommuteCargoPickupNavigation = () => {
     router.push("/arrived");
   };
 
+  // Mock vehicles details
+  const vehicles = [
+    { lat: 35.6762, lng: 139.6503 },
+    { lat: 35.6895, lng: 139.6917 },
+  ];
+
   return (
     <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
       <CardHeader className="bg-red-500 text-white flex items-center p-4">
@@ -37,10 +44,7 @@ const CommuteCargoPickupNavigation = () => {
         </div>
 
         <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
-          {/* This would be replaced with an actual map component */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-gray-500">Map View</p>
-          </div>
+          <Map vehicles={vehicles} />
         </div>
 
         <div className="bg-blue-100 rounded-lg p-4 mb-4">
