@@ -4,7 +4,8 @@
       "module": "commonjs",
       "outDir": "./dist",
       "strict": true,
-      "esModuleInterop": true
+      "esModuleInterop": true,
+      "lib": ["es2019"],
     },
     "include": ["server.ts"],
     "exclude": ["node_modules"]
