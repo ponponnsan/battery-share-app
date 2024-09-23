@@ -1,11 +1,12 @@
+"use client";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Camera, Car, Clock, MapPin, Package, Upload, User } from 'lucide-react';
+import { useRouter } from "next/navigation";
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 const CommuteCargaFullDriverRegistration = () => {
   const [photo, setPhoto] = useState(null);
@@ -17,11 +18,13 @@ const CommuteCargaFullDriverRegistration = () => {
   const [arrivalTime, setArrivalTime] = useState('');
   const [vehicleType, setVehicleType] = useState('');
   const [cargoSpace, setCargoSpace] = useState('');
-  const navigate = useNavigate();  // useNavigateフックを使用してナビゲーションを設定
+  const router = useRouter();
 
   const handleCommuteFormClick = () => {
-    navigate('/commuting-route');  // サインアップ画面に遷移
+    console.log('Navigate to Driver confirm screen');
+    router.push("/confirm-registration");
   };
+
 
   const handlePhotoUpload = (e) => {
     const file = e.target.files[0];
@@ -175,7 +178,7 @@ const CommuteCargaFullDriverRegistration = () => {
                 className="w-full bg-red-500 hover:bg-red-600 text-white"
                 onClick={handleCommuteFormClick}  // ボタンクリック時に画面遷移を実行
               >
-                Register as Driver
+                Continue
           </Button>
         </form>
       </CardContent>

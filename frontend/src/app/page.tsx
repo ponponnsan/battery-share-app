@@ -1,44 +1,29 @@
 "use client";
-import ChooseDriverList from '@/components/ChooseDriverList/choose-driver-list';
-import CommuteCargoDriverRegistration from '@/components/CommuteCargoDriverRegistration/commute-cargo-full-driver-registration';
-import CommuteCargoLogin from '@/components/CommuteCargoLogin/commute-cargo-login';
-import CommuteCargoSignup from '@/components/CommuteCargoSignup/commute-cargo-signup';
-import CommuteForm from '@/components/CommutingRouteForm/commuting-route-form';
-import DriverDetailsView from '@/components/DriverDetailsView/driver-details-view';
-import FindDriverForm from '@/components/FindDriverForm/find-driver-form';
-import TrunkShareMapView from '@/components/TrunkShareMapView/trunk-share-map-view';
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
-function App() {
-  return (
-    <Router>
-      <Routes>
-        {/* ログイン画面 */}
-        <Route path="/" element={<CommuteCargoLogin />} />
-        
-        {/* サインアップ画面 */}
-        <Route path="/signup" element={<CommuteCargoSignup />} />
-        
-        {/* ドライバー登録画面 */}
-        <Route path="/driver-registration" element={<CommuteCargoDriverRegistration />} />
-        
-        {/* 通勤ルート登録画面 */}
-        <Route path="/commuting-route" element={<CommuteForm />} />
-        
-        {/* ドライバー選択画面 */}
-        <Route path="/choose-driver" element={<ChooseDriverList />} />
-        
-        {/* ドライバー詳細画面 */}
-        <Route path="/driver-details" element={<DriverDetailsView />} />
-        
-        {/* ドライバー検索画面 */}
-        <Route path="/find-driver" element={<FindDriverForm />} />
-        
-        {/* マップ表示画面 */}
-        <Route path="/map-view" element={<TrunkShareMapView />} />
-      </Routes>
-    </Router>
-  );
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+export default function HomePage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return; // セッションの状態がまだ読み込み中であれば何もしない
+    if (!session) {
+      // ログインしていない場合、ログインページへリダイレクト
+      router.push("/login");
+    } else {
+      // ログインしている場合、リクエストデリバリーページへリダイレクト
+      router.push("/request-delivery");
+    }
+  }, [session, status, router]);
+
+  // セッションの状態がまだ確認できない間は何も表示しない
+  if (status === "loading") {
+    return <p>Loading...</p>;
+  }
+
+  return null;
 }
 
-export default App;

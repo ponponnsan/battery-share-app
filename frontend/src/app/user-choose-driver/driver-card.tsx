@@ -1,12 +1,13 @@
 import { Car, Clock, MapPin, RotateCcw, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useRouter } from "next/navigation";
 
 const DriverCard = ({ name, from, to, startTime, endTime, frequency, transport, rating }) => {
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleClick = () => {
     // ドライバーの詳細ページにデータを渡しつつ遷移
-    navigate('/driver-details', { state: { name, from, to, startTime, endTime, frequency, transport, rating } });
+    router.push('/driver-details', { state: { name, from, to, startTime, endTime, frequency, transport, rating } });
   };
 
   return (
