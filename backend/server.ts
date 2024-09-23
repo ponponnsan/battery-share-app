@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import * as fs from 'fs';
 import RedisService from './src/db/connectRedis';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -78,17 +79,18 @@ app.get('/invoke-program', async (_req: Request, res: Response) => {
   }
 });
 
-// 管理側への支払いAPI
 /**
+ * 管理側への支払いAPI
+ *
  * Usage:
- * curl -X POST -H "Content-Type: application/json" -d '{ "amount": 0.5 }' http://localhost:3001/send-to-agent
+ * curl -X POST -H "Content-Type: application/json" -d '{ "userId": "test001", "amount": 0.5 }' http://localhost:3001/send-to-agent
  */
 app.post('/send-to-agent', async (req: Request, res: Response) => {
   try {
-    const { amount } = req.body;
+    const { userId, amount } = req.body;
 
-    if (!amount) {
-      return res.status(400).json({ success: false, message: "金額が必要です" });
+    if (!userId || !amount) {
+      return res.status(400).json({ success: false, message: "ユーザIDと金額が必要です" });
     }
 
     const recipientPublicKey = new PublicKey(agentAddress);
@@ -119,7 +121,16 @@ app.post('/send-to-agent', async (req: Request, res: Response) => {
     const txInfo = await connection.getTransaction(signature, { commitment: "confirmed" });
 
     if (txInfo?.meta?.logMessages) {
-      res.json({ success: true, message: "支払いが成功しました", transactionId: signature });
+      // ハッシュ値を生成
+      const hash = crypto.createHash('sha256').update(`${userId}-${signature}`).digest('hex');
+
+      // RedisにユーザIDとハッシュ値を保存
+      await redisService.connect();
+      await redisService.set(userId, hash);
+      await redisService.disconnect();
+
+      // 成功時のレスポンス
+      res.json({ success: true, message: "支払いが成功しました", transactionId: signature, hash: hash });
     } else {
       res.status(500).json({ success: false, message: "トランザクションログの取得に失敗しました" });
     }
