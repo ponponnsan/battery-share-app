@@ -29,7 +29,7 @@ class RedisService {
   public async get(key: string): Promise<string | null> {
     const value = await this.client.get(key);
     console.log(`Get key "${key}": ${value}`);
-    return value;
+    return value ?? null;
   }
 
   // 接続を閉じるメソッド
