@@ -15,15 +15,15 @@ const CommuteCargaDeliveryRequest = () => {
   const [cargoSize, setCargoSize] = useState('');
   const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleRequestDelivery = (e) => {
     e.preventDefault();
     console.log('Delivery Request:', { pickupLocation, deliveryLocation, preferredTime, cargoSize });
-    // Here you would typically handle the request submission logic
+    router.push("/user-choose-driver");
   };
-  const handleRequestDelivery = () => {
-    console.log('Navigate to Request Delivery screen');
-    // Here you would typically handle navigation to the delivery request screen
-  };
+  // const handleRequestDelivery = () => {
+  //   console.log('Navigate to Request Delivery screen');
+  //   // Here you would typically handle navigation to the delivery request screen
+  // };
 
   const handleRegisterAsDriver = () => {
     console.log('Navigate to Driver Registration screen');
@@ -41,7 +41,7 @@ const CommuteCargaDeliveryRequest = () => {
             </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow flex flex-col">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleRequestDelivery} className="space-y-4">
             <div className="space-y-2">
                 <h3 className="font-semibold">Pickup Location</h3>
                 <div className="relative">

@@ -7,6 +7,7 @@ import { useState } from 'react';
 
 const CommuteCargaDeliveryCompletion = () => {
   const [rating, setRating] = useState(0);
+  const router = useRouter();
 
   // Mock delivery details
   const deliveryDetails = {
@@ -17,7 +18,7 @@ const CommuteCargaDeliveryCompletion = () => {
     earnings: '¥1,500',
   };
 
-  const router = useRouter();
+  
 
   const handleRating = (value) => {
     setRating(value);
@@ -25,7 +26,7 @@ const CommuteCargaDeliveryCompletion = () => {
 
   const handleComplete = () => {
     console.log('Delivery completed with rating:', rating);
-    router.push("/wait-delivery");
+    router.push("/confirm-registration");
   };
 
   return (

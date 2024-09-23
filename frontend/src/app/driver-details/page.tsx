@@ -1,14 +1,31 @@
+"use client";  // Next.jsでクライアントコンポーネントを明示
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Car, Clock, MapPin, RotateCcw, Star } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'next/navigation';  // クエリパラメータ取得用
+import { useRouter } from "next/navigation";
 
 const DriverDetailsView = () => {
-  const { state: driver } = useLocation();  // useLocationでドライバーの詳細を受け取る
-  const navigate = useNavigate();  // useNavigateフックを使用してナビゲーションを設定
+  const searchParams = useSearchParams();  // クエリパラメータ取得
+  const router = useRouter();
 
-  const handleShareMapClick = () => {
-    navigate('/map-view');  // サインアップ画面に遷移
+  // クエリパラメータからドライバーの詳細を取得
+  const driver = {
+    name: searchParams.get('name') || 'Driver Name',
+    rating: Number(searchParams.get('rating')) || 5,
+    from: searchParams.get('from') || 'Start Location',
+    to: searchParams.get('to') || 'Destination',
+    startTime: searchParams.get('startTime') || '08:00 AM',
+    endTime: searchParams.get('endTime') || '09:00 AM',
+    frequency: searchParams.get('frequency') || 'Daily',
+    transport: searchParams.get('transport') || 'Car',
+  };
+
+  // ボタンクリックで画面遷移を実行
+  const handleOfferClick = () => {
+    console.log('Navigate to User offer confirm screen');
+    router.push("/offer-confirm");
   };
 
   return (
@@ -60,9 +77,9 @@ const DriverDetailsView = () => {
       </CardContent>
       <div className="p-4">
         <Button 
-          type="button"  // 画面遷移の場合は type="button" にする
+          type="button"
           className="w-full bg-red-500 hover:bg-red-600 text-white"
-          onClick={handleShareMapClick}  // ボタンクリック時に画面遷移を実行
+          onClick={handleOfferClick}
         >
           offer
         </Button>

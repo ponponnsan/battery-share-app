@@ -1,5 +1,7 @@
+"use client";
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import DriverCard from './DriverCard';
+import DriverCard from './driver-card';
+
 
 const ChooseDriverList = () => {
   const drivers = [
@@ -25,4 +27,3 @@ const ChooseDriverList = () => {
 };
 
 export default ChooseDriverList;
-

@@ -20,7 +20,7 @@ const CommuteCargaDeliveryNavigation = () => {
 
   const handleDelivered = () => {
     console.log('Cargo delivered successfully');
-    router.push("/complete-delivery");
+    router.push("/driver-complete-delivery");
   };
 
   return (

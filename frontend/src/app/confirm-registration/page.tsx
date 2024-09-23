@@ -2,8 +2,10 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, Car, Clock, MapPin, Package, User } from 'lucide-react';
+import { useRouter } from "next/navigation";
 
 const CommuteCargaDriverRegistrationConfirmation = () => {
+  const router = useRouter();
   // In a real app, this data would come from the previous form or global state
   const driverInfo = {
     photo: '/api/placeholder/128/128',
@@ -19,12 +21,12 @@ const CommuteCargaDriverRegistrationConfirmation = () => {
 
   const handleEdit = () => {
     console.log('Edit registration');
-    // Here you would typically navigate back to the registration form
+    router.push("/register-driver");
   };
 
   const handleConfirm = () => {
     console.log('Confirm registration');
-    // Here you would typically submit the registration data to your backend
+    router.push("/driver-offer-delivery");
   };
 
   return (

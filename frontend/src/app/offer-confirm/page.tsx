@@ -1,7 +1,9 @@
+"use client";
 import React from 'react';
 import { ArrowLeft, MapPin, Clock, Package, Check, User } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useRouter } from "next/navigation";
 
 const CommuteCargaOfferAcceptedScreen = () => {
   // Mock data for the accepted delivery request
@@ -12,10 +14,12 @@ const CommuteCargaOfferAcceptedScreen = () => {
     cargoSize: "Medium",
     driverName: "Tanaka Yuki",
   };
+  const router = useRouter();
+
 
   const handleConfirm = () => {
     console.log('Confirmation acknowledged');
-    // Here you would typically handle the confirmation logic
+    router.push("/user-delivery-progress");
   };
 
   return (

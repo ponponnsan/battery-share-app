@@ -1,27 +1,32 @@
+"use client";
 import React, { useState } from 'react';
-import { Check, Star, MapPin, Package, Clock, DollarSign } from 'lucide-react';
+import { Check, Star, MapPin, Package, Clock, User } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { useRouter } from "next/navigation";
 
-const CommuteCargaDeliveryCompletion = () => {
+const CommuteCargaUserDeliveryRating = () => {
   const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const router = useRouter();
 
   // Mock delivery details
   const deliveryDetails = {
-    address: '2-1-1 Nihonbashi, Chuo-ku, Tokyo',
-    recipientName: 'Sato Hana',
+    driverName: 'Tanaka Yuki',
     cargoDescription: 'Medium-sized package',
     deliveryTime: '14:30',
-    earnings: '¥1,500',
+    pickupLocation: '1-1-2 Otemachi, Chiyoda-ku, Tokyo',
+    deliveryLocation: '2-1-1 Nihonbashi, Chuo-ku, Tokyo',
   };
 
   const handleRating = (value) => {
     setRating(value);
   };
 
-  const handleComplete = () => {
-    console.log('Delivery completed with rating:', rating);
-    // Here you would typically handle the completion logic
+  const handleSubmit = () => {
+    console.log('Delivery rated:', { rating, comment });
+    router.push("/request-delivery");
   };
 
   return (
@@ -37,42 +42,30 @@ const CommuteCargaDeliveryCompletion = () => {
         </div>
 
         <h3 className="text-xl font-semibold text-center mb-6">
-          Great job! Delivery successful.
+          Your package has been delivered!
         </h3>
 
         <div className="bg-gray-100 rounded-lg p-4 mb-6">
           <div className="flex items-center mb-2">
-            <MapPin className="h-5 w-5 mr-2 text-red-500" />
-            <span className="font-semibold">Delivered to:</span>
+            <User className="h-5 w-5 mr-2 text-blue-500" />
+            <span className="font-semibold">Driver:</span>
+            <span className="ml-2">{deliveryDetails.driverName}</span>
           </div>
-          <p>{deliveryDetails.address}</p>
-          <p>{deliveryDetails.recipientName}</p>
-        </div>
-
-        <div className="flex justify-between mb-6">
-          <div className="flex items-center">
-            <Package className="h-5 w-5 mr-2 text-blue-500" />
-            <span>{deliveryDetails.cargoDescription}</span>
+          <div className="flex items-center mb-2">
+            <Package className="h-5 w-5 mr-2 text-purple-500" />
+            <span className="font-semibold">Package:</span>
+            <span className="ml-2">{deliveryDetails.cargoDescription}</span>
           </div>
           <div className="flex items-center">
             <Clock className="h-5 w-5 mr-2 text-green-500" />
-            <span>{deliveryDetails.deliveryTime}</span>
-          </div>
-        </div>
-
-        <div className="bg-yellow-100 rounded-lg p-4 mb-6">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold">Earnings:</span>
-            <div className="flex items-center">
-              <DollarSign className="h-5 w-5 mr-1 text-yellow-500" />
-              <span className="text-xl font-bold">{deliveryDetails.earnings}</span>
-            </div>
+            <span className="font-semibold">Delivered at:</span>
+            <span className="ml-2">{deliveryDetails.deliveryTime}</span>
           </div>
         </div>
 
         <div className="mb-6">
-          <h4 className="font-semibold mb-2">Rate your experience:</h4>
-          <div className="flex justify-center">
+          <h4 className="font-semibold mb-2">Rate your delivery experience:</h4>
+          <div className="flex justify-center mb-4">
             {[1, 2, 3, 4, 5].map((value) => (
               <Star
                 key={value}
@@ -83,17 +76,24 @@ const CommuteCargaDeliveryCompletion = () => {
               />
             ))}
           </div>
+          <Textarea
+            placeholder="Leave a comment about your delivery experience (optional)"
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            rows={4}
+            className="w-full p-2 border rounded"
+          />
         </div>
 
         <Button 
-          onClick={handleComplete}
+          onClick={handleSubmit}
           className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg mt-auto"
         >
-          Complete
+          Submit Rating
         </Button>
       </CardContent>
     </Card>
   );
 };
 
-export default CommuteCargaDeliveryCompletion;
+export default CommuteCargaUserDeliveryRating;

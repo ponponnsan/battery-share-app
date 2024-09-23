@@ -22,7 +22,7 @@ const CommuteCargaDriverOfferScreen = () => {
 
   const handleDecline = () => {
     console.log('Offer declined');
-    router.push("/wait-delivery");
+    router.push("/confirm-registration");
   };
 
   return (
