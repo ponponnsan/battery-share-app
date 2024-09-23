@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import * as fs from 'fs';
 import RedisService from './src/db/connectRedis';
-import crypto from 'crypto';
+import handler from './src/route/solana';
+
 
 dotenv.config();
 
@@ -41,56 +42,35 @@ if (!PROGRAM_ID) {
 
 const connection = new Connection(SOLANA_RPC_URL, "confirmed");
 
-app.get('/invoke-program', async (_req: Request, res: Response) => {
-  try {
-    const programId = new PublicKey(PROGRAM_ID);
-
-    const transaction = new Transaction().add(
-      new TransactionInstruction({
-        keys: [],
-        programId,
-        data: Buffer.alloc(0), // 空のデータ
-      })
-    );
-
-    // トランザクションに署名して送信
-    const signature = await connection.sendTransaction(transaction, [payer]);
-
-    // トランザクションの確認を待つ
-    const confirmation = await connection.confirmTransaction(signature);
-
-    if (confirmation.value.err) {
-      // トランザクションが失敗した場合
-      res.status(400).json({ success: false, message: "トランザクションが失敗しました", error: confirmation.value.err });
-      return;
-    }
-
-    // トランザクションの詳細を取得
-    const txInfo = await connection.getTransaction(signature, { commitment: "confirmed" });
-
-    if (txInfo?.meta?.logMessages) {
-      res.json({ success: true, message: txInfo.meta.logMessages.join('\n') });
-    } else {
-      res.status(500).json({ success: false, message: "トランザクションログの取得に失敗しました" });
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).json({ success: false, message: "サーバーエラーが発生しました", error: (error as Error).message });
-  }
-});
-
+// solana accout 作成
 /**
- * 管理側への支払いAPI
- *
  * Usage:
- * curl -X POST -H "Content-Type: application/json" -d '{ "userId": "test001", "amount": 0.5 }' http://localhost:3001/send-to-agent
+ * curl -X POST http://localhost:3001/api/solana/setup \
+  -H "Content-Type: application/json" \
+  -d '{
+    "userId": "exampleUserId123"     
+  }'
+ */
+app.post('/api/solana/setup', handler);
+
+// solana account 呼び出し
+/**
+ * Usage:
+ * curl -X GET 'http://localhost:3001/api/solana/setup?userId=your-user-id'
+ */
+app.get('/api/solana/setup', handler); 
+
+// 管理側への支払いAPI
+/**
+ * Usage:
+ * curl -X POST -H "Content-Type: application/json" -d '{ "amount": 0.5 }' http://localhost:3001/send-to-agent
  */
 app.post('/send-to-agent', async (req: Request, res: Response) => {
   try {
-    const { userId, amount } = req.body;
+    const { amount } = req.body;
 
-    if (!userId || !amount) {
-      return res.status(400).json({ success: false, message: "ユーザIDと金額が必要です" });
+    if (!amount) {
+      return res.status(400).json({ success: false, message: "金額が必要です" });
     }
 
     const recipientPublicKey = new PublicKey(agentAddress);
@@ -121,16 +101,7 @@ app.post('/send-to-agent', async (req: Request, res: Response) => {
     const txInfo = await connection.getTransaction(signature, { commitment: "confirmed" });
 
     if (txInfo?.meta?.logMessages) {
-      // ハッシュ値を生成
-      const hash = crypto.createHash('sha256').update(`${userId}-${signature}`).digest('hex');
-
-      // RedisにユーザIDとハッシュ値を保存
-      await redisService.connect();
-      await redisService.set(userId, hash);
-      await redisService.disconnect();
-
-      // 成功時のレスポンス
-      res.json({ success: true, message: "支払いが成功しました", transactionId: signature, hash: hash });
+      res.json({ success: true, message: "支払いが成功しました", transactionId: signature });
     } else {
       res.status(500).json({ success: false, message: "トランザクションログの取得に失敗しました" });
     }

@@ -5,14 +5,16 @@ import React, { useEffect } from "react";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { signIn, useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
+
   useEffect(() => {
     // ログイン済みの場合はTOPページにリダイレクト
     if (status === "authenticated") {
-      redirect("/request-delivery");
+      router.push("/request-delivery");
     }
   }, [session, status]);
 
@@ -21,8 +23,29 @@ const LoginPage = () => {
     const result = await signIn(provider);
 
     // ログインに成功したらTOPページにリダイレクト
-    if (result) {
-      redirect("/request-delivery");
+    if (result?.ok) {
+      console.log('Google Authentication successful, setting up Solana account...');
+
+      // Call the Solana setup API
+      const response = await fetch('/api/solana/setup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: result.user?.id }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Solana Account Public Key:', data.publicKey);
+
+        // Redirect to the request-delivery page
+        router.push('/request-delivery');
+      } else {
+        console.error('Error setting up Solana account');
+      }
+    } else {
+      console.error('Google sign-in failed');
     }
   };
 
