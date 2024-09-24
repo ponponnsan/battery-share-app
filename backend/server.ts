@@ -10,7 +10,10 @@ import handler from './src/route/solana';
 dotenv.config();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: 'http://127.0.0.1:3000', // フロントエンドのURL
+  credentials: true
+}));
 app.use(express.json()); // リクエストボディをJSONで受け取るため
 
 // RedisServiceのインスタンスを作成

@@ -8,7 +8,9 @@ const redisService = new RedisService();
 
 export default async function handler(req: Request, res: Response) {
   // Connect to Redis
+  console.log("sssssssssssssss")
   await redisService.connect();
+  console.log("aaaaaaaaaaaaaaaa")
 
   try {
     // Handle POST request for creating or reusing a Solana account

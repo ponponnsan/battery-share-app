@@ -17,25 +17,33 @@ export const nextAuthOptions: NextAuthOptions = {
       console.log("in jwt", { user, token, account, profile });
 
       if (user) {
-        token.user = user;
-        const u = user as any;
-        token.role = u.role;
+        token.user = {
+          id: user.id,
+          // 他の必要なユーザー情報
+        };
+        // @ts-ignore: ユーザーオブジェクトにroleプロパティがある場合
+        if (user.role) {
+          token.role = user.role;
+        }
       }
       if (account) {
         token.accessToken = account.access_token;
       }
       return token;
     },
-    session: ({ session, token }) => {
-      console.log("in session", { session, token });
-      token.accessToken;
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          role: token.role,
-        },
-      };
+    async session({ session, token }) {
+      // セッションコールバック
+      if (session?.user && token.user) {
+        session.user.id = token.user.id;
+        // 他の必要なユーザー情報を追加
+        if (token.role) {
+          session.user.role = token.role;
+        }
+      }
+      if (token.accessToken) {
+        session.accessToken = token.accessToken;
+      }
+      return session;
     },
   },
 };

@@ -1,9 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-      // X(Twitter)とGoogleのプロフィール画像を表示するために追加
+      // Googleのプロフィール画像を表示するために追加
       domains: ["lh3.googleusercontent.com"],
     },
+    async rewrites() {
+      return [
+        {
+          source: '/api/:path*',
+          destination: 'http://localhost:3001/api/:path*' // バックエンドサーバーのURL
+        }
+      ]
+    }
   };
   
   export default nextConfig;
