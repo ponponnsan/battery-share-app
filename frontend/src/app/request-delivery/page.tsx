@@ -5,40 +5,54 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Clock, MapPin, Package, Truck } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import { Bell, Package, Truck, User } from 'lucide-react';
 
 const CommuteCargaDeliveryRequest = () => {
-  const [pickupLocation, setPickupLocation] = useState('');
-  const [deliveryLocation, setDeliveryLocation] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');
-  const [cargoSize, setCargoSize] = useState('');
-  const router = useRouter();
-
-  const handleRequestDelivery = (e) => {
-    e.preventDefault();
-    console.log('Delivery Request:', { pickupLocation, deliveryLocation, preferredTime, cargoSize });
-    router.push("/user-choose-driver");
-  };
-  // const handleRequestDelivery = () => {
-  //   console.log('Navigate to Request Delivery screen');
-  //   // Here you would typically handle navigation to the delivery request screen
-  // };
-
-  const handleRegisterAsDriver = () => {
-    console.log('Navigate to Driver Registration screen');
-    router.push("/register-driver");
-  };
+    const [pickupLocation, setPickupLocation] = useState('');
+    const [deliveryLocation, setDeliveryLocation] = useState('');
+    const [preferredTime, setPreferredTime] = useState('');
+    const [cargoSize, setCargoSize] = useState('');
+    const [user, setUser] = useState({ name: '', image: '' });
+    const router = useRouter();
 
 
-  return (
-    <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
+    useEffect(() => {
+        // ユーザーIDを適宜取得してfetchUserProfileを呼び出す
+        const userId = "user123"; // ここは実際のユーザーIDに置き換える
+        fetchUserProfile(userId);
+    }, []);
+  
+    const handleRequestDelivery = (e) => {
+      e.preventDefault();
+      console.log('Delivery Request:', { pickupLocation, deliveryLocation, preferredTime, cargoSize });
+      router.push("/user-choose-driver");
+    };
+  
+    const handleRegisterAsDriver = () => {
+      console.log('Navigate to Driver Registration screen');
+      router.push("/register-driver");
+    };
+
+    const fetchUserProfile = async (userId) => {
+        try {
+          const response = await fetch(`http://127.0.0.1:3001/api/user/profile?id=${userId}`);
+          const data = await response.json();
+          console.log(data)
+          setUserProfile(data);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+    };
+  
+    return (
+      <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
         <CardHeader className="bg-red-500 text-white flex items-center p-4">
-            <ArrowLeft className="h-6 w-6 mr-4" />
-            <h2 className="text-xl font-bold flex-grow">Request Delivery</h2>
-            <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-            <img src="/api/placeholder/40/40" alt="Profile" className="w-full h-full object-cover" />
-            </div>
+          <ArrowLeft className="h-6 w-6 mr-4" />
+          <h2 className="text-xl font-bold flex-grow">Request Delivery</h2>
+          <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
+            <img src={user.image || "/api/placeholder/40/40"} alt="Profile" className="w-full h-full object-cover" />
+          </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow flex flex-col">
             <form onSubmit={handleRequestDelivery} className="space-y-4">
@@ -124,73 +138,3 @@ const CommuteCargaDeliveryRequest = () => {
 
 export default CommuteCargaDeliveryRequest;
 
-
-
-// import { Button } from '@/components/ui/button';
-// import { Card, CardContent, CardHeader } from '@/components/ui/card';
-// import { Bell, Package, Truck, User } from 'lucide-react';
-
-// const CommuteCargaHomeScreen = () => {
-//   const handleRequestDelivery = () => {
-//     console.log('Navigate to Request Delivery screen');
-//     // Here you would typically handle navigation to the delivery request screen
-//   };
-
-//   const handleRegisterAsDriver = () => {
-//     console.log('Navigate to Driver Registration screen');
-//     // Here you would typically handle navigation to the driver registration screen
-//   };
-
-//   return (
-//     <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
-//       <CardHeader className="bg-red-500 text-white flex items-center justify-between p-4">
-//         <h2 className="text-xl font-bold">Commute Cargo</h2>
-//         <div className="flex items-center">
-//           <Bell className="h-6 w-6 mr-4" />
-//           <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-//             <img src="/api/placeholder/40/40" alt="Profile" className="w-full h-full object-cover" />
-//           </div>
-//         </div>
-//       </CardHeader>
-//       <CardContent className="p-4 flex-grow flex flex-col justify-center">
-//         <div className="space-y-6">
-//           <h3 className="text-2xl font-bold text-center mb-8">Welcome to Commute Cargo</h3>
-          
-//           <Button 
-//             onClick={handleRequestDelivery}
-//             className="w-full bg-blue-500 hover:bg-blue-600 text-white py-6 rounded-lg flex items-center justify-center text-lg"
-//           >
-//             <Package className="h-8 w-8 mr-4" />
-//             Request a Delivery
-//           </Button>
-
-//           <Button 
-//             onClick={handleRegisterAsDriver}
-//             className="w-full bg-green-500 hover:bg-green-600 text-white py-6 rounded-lg flex items-center justify-center text-lg"
-//           >
-//             <Truck className="h-8 w-8 mr-4" />
-//             Register as a Driver
-//           </Button>
-//         </div>
-//       </CardContent>
-//       <div className="p-4 bg-gray-100">
-//         <div className="flex justify-around">
-//           <Button variant="ghost" className="flex flex-col items-center">
-//             <Package className="h-6 w-6 mb-1" />
-//             <span>Deliveries</span>
-//           </Button>
-//           <Button variant="ghost" className="flex flex-col items-center">
-//             <Truck className="h-6 w-6 mb-1" />
-//             <span>Drive</span>
-//           </Button>
-//           <Button variant="ghost" className="flex flex-col items-center">
-//             <User className="h-6 w-6 mb-1" />
-//             <span>Profile</span>
-//           </Button>
-//         </div>
-//       </div>
-//     </Card>
-//   );
-// };
-
-// export default CommuteCargaHomeScreen;

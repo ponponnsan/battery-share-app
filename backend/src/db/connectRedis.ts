@@ -2,7 +2,8 @@ import { createClient, RedisClientType } from "redis";
 
 class RedisService {
   private client: RedisClientType;
-
+  private isConnected: boolean = false;
+  
   constructor() {
     this.client = createClient({
       url: "redis://localhost:6379", // RedisのURL
@@ -15,7 +16,13 @@ class RedisService {
 
   // Redisとの接続を開始するメソッド
   public async connect(): Promise<void> {
+    if (this.isConnected) {
+      console.log('Socket already opened, reusing connection');
+      return; // 既に接続されている場合は再接続しない
+    }
+
     await this.client.connect();
+    this.isConnected = true;
     console.log("Connected to Redis");
   }
 
@@ -48,8 +55,11 @@ class RedisService {
 
   // 接続を閉じるメソッド
   public async disconnect(): Promise<void> {
-    await this.client.quit();
-    console.log("Disconnected from Redis");
+    if (this.isConnected) {
+      await this.client.quit();
+      this.isConnected = false;
+      console.log("Disconnected from Redis");
+    }
   }
 }
 
