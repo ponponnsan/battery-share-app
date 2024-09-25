@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import express, { Request, Response } from 'express';
 import * as fs from 'fs';
 import RedisService from './src/db/connectRedis';
+import userProfileRoutes from './src/user/profile/route';
+import deliveryRoutes from './src/delivery/request/route';
+import driverRoutes from './src/driver/route/route';
 import crypto from 'crypto';
 
 dotenv.config();
@@ -78,6 +81,69 @@ app.get('/invoke-program', async (_req: Request, res: Response) => {
     res.status(500).json({ success: false, message: "サーバーエラーが発生しました", error: (error as Error).message });
   }
 });
+
+/**
+ * プロフィール API
+ *
+ * POST Usage:
+ * curl -X POST http://127.0.0.1:3001/api/user/profile \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "id": "user123",
+    "image": "https://example.com/image.jpg"
+  }'
+ *
+ * GET Usage:
+ * curl -X GET "http://127.0.0.1:3001/api/user/profile?id=user123" 
+ */
+
+
+app.use('/api/user', userProfileRoutes);
+
+/**
+ * 配送リクエスト関連のAPI
+ *
+ * POST Usage:
+ * curl -X POST http://127.0.0.1:3001/api/delivery/request \
+  -H "Authorization: Bearer user123" \
+  -H "Content-Type: application/json" \
+  -d '{
+      "pickupLocation": "Central Park, New York, NY",
+      "deliveryLocation": "Times Square, New York, NY",
+      "preferredTime": "2024-09-30T10:00:00",
+      "cargoSize": "Medium"
+  }'
+ *
+ * GET Usage:
+ * curl -X GET "http://127.0.0.1:3001/api/delivery/request/{requestId}" \
+    -H "Authorization: Bearer user123"    
+ */
+
+app.use('/api/delivery', deliveryRoutes);  
+
+/**
+ * 配送リクエスト関連のAPI
+ *
+ * POST Usage:
+ * curl -X POST http://127.0.0.1:3001/api/driver/route \
+  -H "Authorization: Bearer user123" \
+  -H "Content-Type: application/json" \
+  -d '{
+      "introduction": "Experienced driver with a safe track record.",
+      "fromLocation": "Brooklyn, NY",
+      "toLocation": "Manhattan, NY",
+      "departureTime": "2024-09-30T08:00:00",
+      "arrivalTime": "2024-09-30T08:30:00",
+      "vehicleType": "Sedan",
+      "cargoSpace": "2 passengers"
+  }'
+ *
+ * GET Usage:
+ * curl -X GET http://127.0.0.1:3001/api/driver/route/{routeId}\
+  -H "Authorization: Bearer user123"    
+ */
+app.use('/api/driver', driverRoutes);      
 
 /**
  * 管理側への支払いAPI

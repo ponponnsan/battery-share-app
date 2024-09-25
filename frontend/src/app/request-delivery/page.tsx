@@ -5,40 +5,54 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Clock, MapPin, Package, Truck } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import { Bell, Package, Truck, User } from 'lucide-react';
 
 const CommuteCargaDeliveryRequest = () => {
-  const [pickupLocation, setPickupLocation] = useState('');
-  const [deliveryLocation, setDeliveryLocation] = useState('');
-  const [preferredTime, setPreferredTime] = useState('');
-  const [cargoSize, setCargoSize] = useState('');
-  const router = useRouter();
-
-  const handleRequestDelivery = (e) => {
-    e.preventDefault();
-    console.log('Delivery Request:', { pickupLocation, deliveryLocation, preferredTime, cargoSize });
-    router.push("/user-choose-driver");
-  };
-  // const handleRequestDelivery = () => {
-  //   console.log('Navigate to Request Delivery screen');
-  //   // Here you would typically handle navigation to the delivery request screen
-  // };
-
-  const handleRegisterAsDriver = () => {
-    console.log('Navigate to Driver Registration screen');
-    router.push("/register-driver");
-  };
+    const [pickupLocation, setPickupLocation] = useState('');
+    const [deliveryLocation, setDeliveryLocation] = useState('');
+    const [preferredTime, setPreferredTime] = useState('');
+    const [cargoSize, setCargoSize] = useState('');
+    const [user, setUser] = useState({ name: '', image: '' });
+    const router = useRouter();
 
 
-  return (
-    <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
+    useEffect(() => {
+        // ユーザーIDを適宜取得してfetchUserProfileを呼び出す
+        const userId = "user123"; // ここは実際のユーザーIDに置き換える
+        fetchUserProfile(userId);
+    }, []);
+  
+    const handleRequestDelivery = (e) => {
+      e.preventDefault();
+      console.log('Delivery Request:', { pickupLocation, deliveryLocation, preferredTime, cargoSize });
+      router.push("/user-choose-driver");
+    };
+  
+    const handleRegisterAsDriver = () => {
+      console.log('Navigate to Driver Registration screen');
+      router.push("/register-driver");
+    };
+
+    const fetchUserProfile = async (userId) => {
+        try {
+          const response = await fetch(`http://127.0.0.1:3001/api/user/profile?id=${userId}`);
+          const data = await response.json();
+          console.log(data)
+          setUserProfile(data);
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+    };
+  
+    return (
+      <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
         <CardHeader className="bg-red-500 text-white flex items-center p-4">
-            <ArrowLeft className="h-6 w-6 mr-4" />
-            <h2 className="text-xl font-bold flex-grow">Request Delivery</h2>
-            <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
-            <img src="/api/placeholder/40/40" alt="Profile" className="w-full h-full object-cover" />
-            </div>
+          <ArrowLeft className="h-6 w-6 mr-4" />
+          <h2 className="text-xl font-bold flex-grow">Request Delivery</h2>
+          <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
+            <img src={user.image || "/api/placeholder/40/40"} alt="Profile" className="w-full h-full object-cover" />
+          </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow flex flex-col">
             <form onSubmit={handleRequestDelivery} className="space-y-4">
