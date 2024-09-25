@@ -190,8 +190,10 @@ app.post('/send-to-agent', async (req: Request, res: Response) => {
       // ハッシュ値を生成
       const hash = crypto.createHash('sha256').update(`${userId}-${signature}`).digest('hex');
 
-      // RedisにユーザIDとハッシュ値を保存
-      await redisService.connect();
+      // Redisへの接続を確認してから操作
+      if (!redisService.checkConnection()) {
+        await redisService.connect();
+      }
       await redisService.set(userId, hash);
       await redisService.disconnect();
 
@@ -279,8 +281,11 @@ app.post('/set-redis', async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'キーと値の両方が必要です' });
     }
 
-    // Redisに接続してデータをセット
-    await redisService.connect();
+    // Redisへの接続を確認してから操作
+    if (!redisService.checkConnection()) {
+      await redisService.connect();
+    }
+
     await redisService.set(key, value);
 
     // 成功時のレスポンス
@@ -307,8 +312,12 @@ app.get('/get-redis', async (req: Request, res: Response) => {
       return res.status(400).json({ success: false, message: 'キーが必要です' });
     }
 
-    await redisService.connect();
+    if (!redisService.checkConnection()) {
+      await redisService.connect();
+    }
+
     const value = await redisService.get(key as string);
+    await redisService.disconnect();
 
     if (value) {
       res.status(200).json({ success: true, key, value });
