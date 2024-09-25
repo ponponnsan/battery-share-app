@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, MapPin, Navigation, Phone } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
 import Map from "@/components/maps/google-map";
+import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 
 const CommuteCargoPickupNavigation = () => {
   const [estimatedTime, setEstimatedTime] = useState('15 min');
@@ -43,9 +44,11 @@ const CommuteCargoPickupNavigation = () => {
           <p>{pickupDetails.address}</p>
         </div>
 
-        <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
-          <Map vehicles={vehicles} />
-        </div>
+        <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
+          <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
+            <Map />
+          </div>
+        </LoadScript>
 
         <div className="bg-blue-100 rounded-lg p-4 mb-4">
           <div className="flex justify-between items-center mb-2">
