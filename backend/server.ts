@@ -324,8 +324,6 @@ app.get('/get-redis', async (req: Request, res: Response) => {
     } else {
       res.status(404).json({ success: false, message: `キー "${key}" に対応するデータが見つかりませんでした` });
     }
-
-    await redisService.disconnect();
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ success: false, message: 'サーバーエラーが発生しました', error: (error as Error).message });
