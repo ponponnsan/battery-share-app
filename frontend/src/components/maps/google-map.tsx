@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   GoogleMap,
   LoadScript,
@@ -8,6 +8,8 @@ import {
   DirectionsRenderer,
   Marker, // Markerをインポート
 } from '@react-google-maps/api';
+import { Clock, Navigation } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const mapContainerStyle = {
   width: '100%',
@@ -19,13 +21,15 @@ const center = {
   lng: -74.0060, // New York City center
 };
 
-const libraries: ("places" | "drawing" | "geometry" | "localContext" | "visualization")[] = ['places'];
+const libraries: ("places" | "geometry" | "drawing" | "visualization")[] = ["places"];
 
-const Map: React.FC = () => {
+
+const Map: React.FC<MapProps> = () => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
-
+  const [distance, setDistance] = useState<string>('');
+  const [estimatedTime, setEstimatedTime] = useState<string>('');
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string,
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries,
   });
 
@@ -38,107 +42,79 @@ const Map: React.FC = () => {
   ) => {
     if (result !== null && status === 'OK') {
       setDirections(result);
+      setDistance(result.routes[0].legs[0].distance?.text || '');
+      setEstimatedTime(result.routes[0].legs[0].duration?.text || '');
     }
   }, []);
 
   const directionsOptions: google.maps.DirectionsRequest = {
     destination: destination,
     origin: origin,
-    travelMode: 'DRIVING',
+    travelMode: google.maps.TravelMode.DRIVING,
   };
 
   if (loadError) {
-    return <div>Error loading maps</div>;
+    return (
+      <Alert variant="destructive">
+        <AlertDescription>
+          Error loading maps: {loadError.message}
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   if (!isLoaded) {
-    return <div>Loading maps</div>;
+    return <div className="flex justify-center items-center h-96">Loading maps...</div>;
   }
 
+
   return (
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={center}
-        zoom={9}
-      >
-        <Marker position={origin}  />
-        <Marker position={destination} label="B" />
-        <DirectionsService
-          options={directionsOptions}
-          callback={directionsCallback}
-        />
-        {directions && (
-          <DirectionsRenderer
-            directions={directions}
-            options={{
-              suppressMarkers: true,
-              polylineOptions: {
-                strokeColor: "#4285F4",
-                strokeWeight: 5,
-              },
-            }}
+    <div>
+      <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          center={center}
+          zoom={9}
+        >
+          {/* <Marker position={origin} /> */}
+          <Marker position={destination} />
+          <DirectionsService
+            options={directionsOptions}
+            callback={directionsCallback}
           />
-        )}
-      </GoogleMap>
+          {directions && (
+            <DirectionsRenderer
+              directions={directions}
+              options={{
+                suppressMarkers: true,
+                polylineOptions: {
+                  strokeColor: "#4285F4",
+                  strokeWeight: 5,
+                },
+              }}
+            />
+          )}
+        </GoogleMap>
+      </div>
+      <div className="bg-blue-100 rounded-lg p-4 mb-4">
+        <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center">
+            <Navigation className="h-5 w-5 mr-2 text-blue-500" />
+            <span className="font-semibold">Distance</span>
+          </div>
+          <span>{distance}</span>
+        </div>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <Clock className="h-5 w-5 mr-2 text-blue-500" />
+            <span className="font-semibold">ETA</span>
+          </div>
+          <span>{estimatedTime}</span>
+        </div>
+      </div>
+    </div>
   );
 };
 
 export default Map;
 
-
-// "use client";
-// import { useEffect } from 'react';
-// import Script from 'next/script';
-
-// const Map: React.FC = () => {
-//   useEffect(() => {
-//     if (!window.google) {
-//       // Google Maps APIがまだロードされていない場合のみ initMap を設定
-//       window.initMap = function () {
-//         const cairo = { lat: 30.064742, lng: 31.249509 };
-
-//         const map = new window.google.maps.Map(
-//           document.getElementById("map") as HTMLElement,
-//           {
-//             scaleControl: true,
-//             center: cairo,
-//             zoom: 10,
-//           }
-//         );
-
-//         const infowindow = new window.google.maps.InfoWindow();
-//         infowindow.setContent("<b>القاهرة</b>");
-
-//         const marker = new window.google.maps.Marker({ map, position: cairo });
-
-//         marker.addListener("click", () => {
-//           infowindow.open(map, marker);
-//         });
-//       };
-//     } else if (window.initMap) {
-//       // APIがすでにロードされている場合、マップを初期化
-//       window.initMap();
-//     }
-//   }, []);
-
-//   return (
-//     <div>
-//       {/* Google Maps API スクリプトの追加。APIがロード済みでない場合のみ読み込み */}
-//       {!window.google && (
-//         <Script
-//           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap&language=en`}
-//           async
-//           defer
-//           onLoad={() => {
-//             console.log('Google Maps API loaded');
-//           }}
-//         />
-//       )}
-      
-//       {/* マップが描画される要素 */}
-//       <div id="map" style={{ width: '100%', height: '400px' }}></div>
-//     </div>
-//   );
-// };
-
-// export default Map;

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { MapPin, Package, Clock, User, Phone, MessageCircle } from 'lucide-react';
+import { MapPin, Package, User, Phone, MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
@@ -51,25 +51,13 @@ const CommuteCargaUserDeliveryProgress = () => {
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col">
-        <LoadScript
+      <LoadScript
         googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
         language="en"
         region="US"
         >
-          <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
-            <Map />
-          </div>
+          <Map /> 
         </LoadScript>
-
-        <div className="bg-blue-100 rounded-lg p-4 mb-4">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <Clock className="h-5 w-5 mr-2 text-blue-500" />
-              <span className="font-semibold">Estimated Arrival:</span>
-            </div>
-            <span className="text-lg font-bold">{estimatedArrival}</span>
-          </div>
-        </div>
 
         <div className="bg-white rounded-lg shadow-md p-4 mb-4">
           <h3 className="font-semibold mb-2 flex items-center">
