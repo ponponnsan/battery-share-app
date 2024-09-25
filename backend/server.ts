@@ -123,7 +123,7 @@ app.use('/api/user', userProfileRoutes);
 app.use('/api/delivery', deliveryRoutes);  
 
 /**
- * 配送リクエスト関連のAPI
+ * 配送経路登録のAPI
  *
  * POST Usage:
  * curl -X POST http://127.0.0.1:3001/api/driver/route \
