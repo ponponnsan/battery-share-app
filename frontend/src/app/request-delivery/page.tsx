@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Clock, MapPin, Package, Truck } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useState } from 'react';
-// import { Bell, Package, Truck, User } from 'lucide-react';
+
 
 const CommuteCargaDeliveryRequest = () => {
   const [pickupLocation, setPickupLocation] = useState('');
@@ -43,6 +43,7 @@ const CommuteCargaDeliveryRequest = () => {
         <CardContent className="p-4 flex-grow flex flex-col">
             <form onSubmit={handleRequestDelivery} className="space-y-4">
             <div className="space-y-2">
+
                 <h3 className="font-semibold">Pickup Location</h3>
                 <div className="relative">
                 <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />

@@ -6,9 +6,14 @@ const nextConfig = {
     },
     async rewrites() {
       return [
+        // Ensure next-auth routes are handled by Next.js itself, not forwarded to the backend
+        {
+          source: '/api/auth/:path*',
+          destination: '/api/auth/:path*',
+        },
         {
           source: '/api/:path*',
-          destination: 'http://localhost:3001/api/:path*' // バックエンドサーバーのURL
+          destination: 'http://127.0.0.1:3001/api/:path*' // バックエンドサーバーのURL
         }
       ]
     }

@@ -1,5 +1,4 @@
 import GoogleProvider from "next-auth/providers/google";
-
 import type { NextAuthOptions } from "next-auth";
 
 export const nextAuthOptions: NextAuthOptions = {
@@ -12,38 +11,34 @@ export const nextAuthOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    jwt: async ({ token, user, account, profile }) => {
+    jwt: async ({ token, user, account }) => {
       // 注意: トークンをログ出力してはダメです。
-      console.log("in jwt", { user, token, account, profile });
+      console.log("in jwt", { user, token, account });
 
       if (user) {
         token.user = {
-          id: user.id,
-          // 他の必要なユーザー情報
+          id: user.id || user.sub || "", // user.idがない場合、user.subを使用
+          // 他の必要なユーザー情報を追加
         };
-        // @ts-ignore: ユーザーオブジェクトにroleプロパティがある場合
-        if (user.role) {
-          token.role = user.role;
-        }
+        const u = user as any;
+        token.role = u.role || ""; // roleがある場合、トークンに設定
       }
       if (account) {
         token.accessToken = account.access_token;
       }
       return token;
     },
-    async session({ session, token }) {
-      // セッションコールバック
-      if (session?.user && token.user) {
-        session.user.id = token.user.id;
-        // 他の必要なユーザー情報を追加
-        if (token.role) {
-          session.user.role = token.role;
-        }
-      }
-      if (token.accessToken) {
-        session.accessToken = token.accessToken;
-      }
-      return session;
+    session: ({ session, token }) => {
+      console.log("in session", { session, token });
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.user?.id || "", // JWTからidを設定
+          role: token.role || "", // 役割を追加
+        },
+        accessToken: token.accessToken || "", // アクセストークンをセッションに追加
+      };
     },
   },
 };

@@ -1,8 +1,8 @@
 "use client";
-
 import { useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import SolanaAccountManager from '@/components/solana/check-solana-account';
 
 export default function HomePage() {
   const { data: session, status } = useSession();
@@ -24,6 +24,10 @@ export default function HomePage() {
     return <p>Loading...</p>;
   }
 
-  return null;
+  return (
+    <div>
+      <SolanaAccountManager />
+    </div>
+  );
 }
 

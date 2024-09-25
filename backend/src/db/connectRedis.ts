@@ -2,10 +2,11 @@ import { createClient, RedisClientType } from "redis";
 
 class RedisService {
   private client: RedisClientType;
+  private isConnected: boolean = false;
 
   constructor() {
     this.client = createClient({
-      url: "redis://localhost:6379", // RedisのURL
+      url: "redis://localhost:6379",
     });
 
     this.client.on("error", (err: Error) => {
@@ -13,29 +14,28 @@ class RedisService {
     });
   }
 
-  // Redisとの接続を開始するメソッド
   public async connect(): Promise<void> {
-    await this.client.connect();
-    console.log("Connected to Redis");
+    if (!this.isConnected) {
+      await this.client.connect();
+      this.isConnected = true;
+      console.log("Connected to Redis");
+    }
   }
 
-  // データをセットするメソッド
+  public async disconnect(): Promise<void> {
+    if (this.isConnected) {
+      await this.client.quit();
+      this.isConnected = false;
+      console.log("Disconnected from Redis");
+    }
+  }
+
   public async set(key: string, value: string): Promise<void> {
     await this.client.set(key, value);
-    console.log(`Set key "${key}" with value "${value}"`);
   }
 
-  // データを取得するメソッド
   public async get(key: string): Promise<string | null> {
-    const value = await this.client.get(key);
-    console.log(`Get key "${key}": ${value}`);
-    return value;
-  }
-
-  // 接続を閉じるメソッド
-  public async disconnect(): Promise<void> {
-    await this.client.quit();
-    console.log("Disconnected from Redis");
+    return await this.client.get(key);
   }
 }
 
