@@ -3,7 +3,7 @@ import { createClient, RedisClientType } from "redis";
 class RedisService {
   private client: RedisClientType;
   private isConnected: boolean = false;
-  
+
   constructor() {
     this.client = createClient({
       url: "redis://localhost:6379", // RedisのURL
@@ -24,6 +24,11 @@ class RedisService {
     await this.client.connect();
     this.isConnected = true;
     console.log("Connected to Redis");
+  }
+
+  // Redis接続状態を確認するメソッド
+  public checkConnection(): boolean {
+    return this.isConnected;
   }
 
   // String型をセットするメソッド
