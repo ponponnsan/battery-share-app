@@ -13,8 +13,6 @@ export const nextAuthOptions: NextAuthOptions = {
   ],
   callbacks: {
     jwt: async ({ token, user, account, profile }) => {
-      // 注意: トークンをログ出力してはダメです。
-      console.log("in jwt", { user, token, account, profile });
 
       if (user) {
         token.user = user;
@@ -27,6 +25,10 @@ export const nextAuthOptions: NextAuthOptions = {
       return token;
     },
     session: ({ session, token }) => {
+      if (session.user) {
+        session.user.id = token.sub as string;
+      }
+      // 注意: トークンをログ出力してはダメです。
       console.log("in session", { session, token });
       token.accessToken;
       return {

@@ -5,16 +5,45 @@ import React, { useEffect } from "react";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { signIn, useSession } from "next-auth/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // useEffect(() => {
+  //   // ログイン済みの場合はTOPページにリダイレクト
+  //   if (status === "authenticated") {
+  //     redirect("/request-delivery");
+  //   }
+  // }, [session, status]);
+
+  // const handleGmailLogin = (provider: string) => async (event: React.MouseEvent) => {
+  //   event.preventDefault();
+  //   const result = await signIn(provider);
+
+  //   // ログインに成功したらTOPページにリダイレクト
+  //   if (result) {
+  //     redirect("/request-delivery");
+  //   }
+  // };
+
+
   useEffect(() => {
-    // ログイン済みの場合はTOPページにリダイレクト
-    if (status === "authenticated") {
-      redirect("/request-delivery");
+    if (status === "authenticated" && session?.user) {
+      // セッション情報をローカルストレージに保存
+      const userData = {
+        id : session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+      
+      // TOPページにリダイレクト
+      router.push("/request-delivery");
     }
-  }, [session, status]);
+  }, [session, status, router]);
 
   const handleGmailLogin = (provider: string) => async (event: React.MouseEvent) => {
     event.preventDefault();
@@ -22,9 +51,26 @@ const LoginPage = () => {
 
     // ログインに成功したらTOPページにリダイレクト
     if (result) {
-      redirect("/request-delivery");
+      router.push("/request-delivery");
     }
   };
+
+  // ローカルストレージからユーザー情報を取得する関数
+  // const getStoredUserData = () => {
+  //   if (typeof window !== 'undefined') {
+  //     const storedData = localStorage.getItem('userData');
+  //     return storedData ? JSON.parse(storedData) : null;
+  //   }
+  //   return null;
+  // };
+
+  // ローカルストレージからユーザー情報を削除する関数（ログアウト時に使用）
+  // const clearStoredUserData = () => {
+  //   if (typeof window !== 'undefined') {
+  //     localStorage.removeItem('userData');
+  //   }
+  // };
+
 
   return (
     <Card className="w-full max-w-md mx-auto h-screen flex flex-col">

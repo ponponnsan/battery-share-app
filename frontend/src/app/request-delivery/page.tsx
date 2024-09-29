@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Clock, MapPin, Package, Truck } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 // import { Bell, Package, Truck, User } from 'lucide-react';
 
 const CommuteCargaDeliveryRequest = () => {
@@ -16,12 +16,24 @@ const CommuteCargaDeliveryRequest = () => {
     const [user, setUser] = useState({ name: '', image: '' });
     const router = useRouter();
 
-
     useEffect(() => {
-        // ユーザーIDを適宜取得してfetchUserProfileを呼び出す
-        const userId = "user123"; // ここは実際のユーザーIDに置き換える
-        fetchUserProfile(userId);
+      const userData = getStoredUserData();
+      if (userData && userData.id) {
+        fetchUserProfile(userData.id);
+        console.log('ユーザー情報を取得しました', userData)
+      } else {
+        console.error("ユーザー情報が見つかりませんでした");
+      }
     }, []);
+
+    const getStoredUserData = () => {
+      if (typeof window !== 'undefined') {
+        const storedData = localStorage.getItem('userData');
+        return storedData ? JSON.parse(storedData) : null;
+      }
+      return null;
+    };
+    
   
     const handleRequestDelivery = (e) => {
       e.preventDefault();
@@ -39,7 +51,7 @@ const CommuteCargaDeliveryRequest = () => {
           const response = await fetch(`http://127.0.0.1:3001/api/user/profile?id=${userId}`);
           const data = await response.json();
           console.log(data)
-          setUserProfile(data);
+          setUser(data);
         } catch (error) {
           console.error("Error fetching user profile:", error);
         }
