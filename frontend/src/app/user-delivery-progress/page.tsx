@@ -3,14 +3,16 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, Package, User, Phone, MessageCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { LoadScript } from '@react-google-maps/api';
 import Map from "@/components/maps/google-map";
-import Popup from '@/components/popup/popup'; 
+import Popup from '@/components/popup/popup';
+import { useRouter } from "next/navigation"; // useRouter を追加
 
 const CommuteCargaUserDeliveryProgress = () => {
   const [status, setStatus] = useState('In Transit');
   const [estimatedArrival, setEstimatedArrival] = useState('15 min');
   const [showPopup, setShowPopup] = useState(false);
+  const router = useRouter(); // useRouter のインスタンスを取得
 
   // Mock delivery details
   const deliveryDetails = {
@@ -39,24 +41,20 @@ const CommuteCargaUserDeliveryProgress = () => {
   const handleClosePopup = () => {
     setShowPopup(false);
   };
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setEstimatedArrival((prev) => {
-  //       const minutes = parseInt(prev);
-  //       return minutes > 1 ? `${minutes - 1} min` : 'Arriving';
-  //     });
-  //   }, 60000); // Update every minute
 
-  //   return () => clearInterval(timer);
-  // }, []);
+  // ページ遷移を処理する関数
+  const handleCompleteDelivery = () => {
+    console.log('Navigating to User complete delivery screen');
+    router.push("/user-complete-delivery");
+  };
 
   const handleContact = () => {
     console.log('Contacting driver');
-    // Here you would typically handle the contact logic
+    // ここで通常は連絡処理を行います
   };
 
   return (
-<div>
+    <div>
       <Card className="w-full max-w-md mx-auto h-screen flex flex-col relative"> {/* relativeを追加 */}
         <CardHeader className="bg-blue-500 text-white flex items-center justify-between p-4">
           <h2 className="text-xl font-bold">Delivery in Progress</h2>
@@ -123,7 +121,11 @@ const CommuteCargaUserDeliveryProgress = () => {
       </Card>
 
       {showPopup && (
-        <Popup message="Delivery is complete!" onClose={handleClosePopup} />
+        <Popup
+          message="Delivery is complete!"
+          onClose={handleClosePopup}
+          onComplete={handleCompleteDelivery}
+        />
       )}
     </div>
   );
