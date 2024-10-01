@@ -60,6 +60,7 @@ const LoginPage = () => {
     try {
       // airdropリクエストを1回だけ試行
       // ただ、(Too Many Requests)は依然としてエラーは発生しているが、動いているのでよしとしている。
+      // おそらく、airdropの機能を実装しなかったらエラーは出なくなると思うが、そうするとsolanaの残高がなくなるので、この機能を実装している。
       const airdropSignature = await connection.requestAirdrop(
         account.publicKey,
         web3.LAMPORTS_PER_SOL
