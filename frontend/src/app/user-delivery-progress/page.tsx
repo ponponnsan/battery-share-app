@@ -59,20 +59,16 @@ const getStoredDriverData = () => {
   const handleClosePopup = () => {
     setShowPopup(false);
   };
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setEstimatedArrival((prev) => {
-  //       const minutes = parseInt(prev);
-  //       return minutes > 1 ? `${minutes - 1} min` : 'Arriving';
-  //     });
-  //   }, 60000); // Update every minute
 
-  //   return () => clearInterval(timer);
-  // }, []);
+  // ページ遷移を処理する関数
+  const handleCompleteDelivery = () => {
+    console.log('Navigating to User complete delivery screen');
+    router.push("/user-complete-delivery");
+  };
 
   const handleContact = () => {
     console.log('Contacting driver');
-    // Here you would typically handle the contact logic
+    // ここで通常は連絡処理を行います
   };
 
   return (
@@ -143,7 +139,11 @@ const getStoredDriverData = () => {
       </Card>
 
       {showPopup && (
-        <Popup message="Delivery is complete!" onClose={handleClosePopup} />
+        <Popup
+          message="Delivery is complete!"
+          onClose={handleClosePopup}
+          onComplete={handleCompleteDelivery}
+        />
       )}
     </div>
   );
