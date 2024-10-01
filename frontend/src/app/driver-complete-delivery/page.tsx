@@ -3,11 +3,37 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Check, Clock, DollarSign, MapPin, Package, Star } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const CommuteCargaDeliveryCompletion = () => {
   const [rating, setRating] = useState(0);
   const router = useRouter();
+
+  const [UserPickup, setUserPickup] = useState({   
+    pickupLocation: '',
+    deliveryLocation: '',
+    preferredTime: '',
+    cargoSize: '',
+  });
+
+  useEffect(() => {
+    const userPickupData = getUserPickupData();
+    if (userPickupData) {
+      setUserPickup(userPickupData);
+      console.log('ユーザー情報を取得しました', userPickupData)
+    } else {
+      console.error("ユーザー情報が見つかりませんでした");
+    }
+  }, []);
+
+
+  const getUserPickupData = () => {
+    if (typeof window !== 'undefined') {
+      const storedData = localStorage.getItem('userPickupData');
+      return storedData ? JSON.parse(storedData) : null;
+    }
+    return null;
+  };
 
   // Mock delivery details
   const deliveryDetails = {
@@ -42,7 +68,7 @@ const CommuteCargaDeliveryCompletion = () => {
         </div>
 
         <h3 className="text-xl font-semibold text-center mb-6">
-          Great job! Delivery successful.
+          Great job! Delivery successful!
         </h3>
 
         <div className="bg-gray-100 rounded-lg p-4 mb-6">
@@ -50,14 +76,13 @@ const CommuteCargaDeliveryCompletion = () => {
             <MapPin className="h-5 w-5 mr-2 text-red-500" />
             <span className="font-semibold">Delivered to:</span>
           </div>
-          <p>{deliveryDetails.address}</p>
-          <p>{deliveryDetails.recipientName}</p>
+          <p>{UserPickup.deliveryLocation}</p>
         </div>
 
         <div className="flex justify-between mb-6">
           <div className="flex items-center">
             <Package className="h-5 w-5 mr-2 text-blue-500" />
-            <span>{deliveryDetails.cargoDescription}</span>
+            <span>{UserPickup.cargoSize}</span>
           </div>
           <div className="flex items-center">
             <Clock className="h-5 w-5 mr-2 text-green-500" />

@@ -5,19 +5,53 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { LoadScript } from '@react-google-maps/api';
 import { MapPin, Package, Phone } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const CommuteCargaDeliveryNavigation = () => {
   const [estimatedTime, setEstimatedTime] = useState('25 min');
   const [distance, setDistance] = useState('7.5 km');
   const router = useRouter();
 
+  const [user, setUser] = useState({ name: '' });
+  const [UserPickup, setUserPickup] = useState({   
+    pickupLocation: '',
+    deliveryLocation: '',
+    preferredTime: '',
+    cargoSize: '',
+  });
+
+  useEffect(() => {
+    const userPickupData = getUserPickupData();
+    const userData = getStoredUserData();
+    if (userPickupData && userData) {
+      setUserPickup(userPickupData);
+      setUser(userData)
+      console.log('ユーザー情報を取得しました', userPickupData)
+      console.log('ユーザー名', userData.name) 
+    } else {
+      console.error("ユーザー情報が見つかりませんでした");
+    }
+  }, []);
+
+  const getStoredUserData = () => {
+    if (typeof window !== 'undefined') {
+      const storedData = localStorage.getItem('userData');
+      return storedData ? JSON.parse(storedData) : null;
+    }
+    return null;
+  };
+
+  const getUserPickupData = () => {
+    if (typeof window !== 'undefined') {
+      const storedData = localStorage.getItem('userPickupData');
+      return storedData ? JSON.parse(storedData) : null;
+    }
+    return null;
+  };
+
   // Mock delivery details
   const deliveryDetails = {
-    address: '2-1-1 Nihonbashi, Chuo-ku, Tokyo',
-    recipientName: 'Sato Hana',
     phoneNumber: '090-9876-5432',
-    cargoDescription: 'Medium-sized package, handle with care',
   };
 
   // Mock vehicles details
@@ -38,12 +72,12 @@ const CommuteCargaDeliveryNavigation = () => {
         <h2 className="text-xl font-bold flex-grow">Navigate to Delivery</h2>
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col">
-        <div className="bg-gray-100 rounded-lg p-4 mb-4">
+        <div className="bg-gray-100 rounded-lg p-2 mb-4">
           <h3 className="font-semibold mb-2 flex items-center">
             <MapPin className="h-5 w-5 mr-2 text-red-500" />
             Delivery Location
           </h3>
-          <p>{deliveryDetails.address}</p>
+          <p>{UserPickup.deliveryLocation}</p>
         </div>
 
         <LoadScript
@@ -54,9 +88,9 @@ const CommuteCargaDeliveryNavigation = () => {
           <Map /> 
         </LoadScript>
 
-        <div className="bg-green-100 rounded-lg p-4 mb-4">
-          <h3 className="font-semibold mb-2">Recipient Details</h3>
-          <p>{deliveryDetails.recipientName}</p>
+        <div className="bg-green-100 rounded-lg p-2 mb-4">
+          <h3 className="font-semibold mb-2">Customer Details</h3>
+          <p>{user.name}</p>
           <div className="flex items-center mt-2">
             <Phone className="h-5 w-5 mr-2 text-green-500" />
             <a href={`tel:${deliveryDetails.phoneNumber}`} className="text-blue-500 underline">
@@ -65,12 +99,12 @@ const CommuteCargaDeliveryNavigation = () => {
           </div>
         </div>
 
-        <div className="bg-yellow-100 rounded-lg p-4 mb-4">
+        <div className="bg-yellow-100 rounded-lg p-2 mb-4">
           <h3 className="font-semibold mb-2 flex items-center">
             <Package className="h-5 w-5 mr-2 text-yellow-500" />
             Cargo Details
           </h3>
-          <p>{deliveryDetails.cargoDescription}</p>
+          <p>{UserPickup.cargoSize}</p>
         </div>
 
         <Button 

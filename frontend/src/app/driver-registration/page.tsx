@@ -21,6 +21,19 @@ const CommuteCargaFullDriverRegistration = () => {
   const router = useRouter();
 
   const handleCommuteFormClick = () => {
+    const driverData = {
+      photo,
+      name,
+      introduction,
+      fromLocation,
+      toLocation,
+      departureTime,
+      arrivalTime,
+      vehicleType,
+      cargoSpace 
+    };
+    localStorage.setItem('driverData', JSON.stringify(driverData));
+    console.log('Driver Registration:', driverData);
     console.log('Navigate to Driver confirm screen');
     router.push("/confirm-registration");
   };
@@ -37,11 +50,6 @@ const CommuteCargaFullDriverRegistration = () => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Driver Registration:', { photo, name, introduction, fromLocation, toLocation, departureTime, arrivalTime, vehicleType, cargoSpace });
-    // Here you would typically handle the registration logic
-  };
 
   return (
     <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
@@ -49,7 +57,7 @@ const CommuteCargaFullDriverRegistration = () => {
         <h2 className="text-xl font-bold flex-grow">Driver Registration</h2>
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col overflow-y-auto">
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form>
           <div className="flex flex-col items-center">
             <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden mb-2">
               {photo ? (
