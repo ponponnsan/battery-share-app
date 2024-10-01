@@ -5,16 +5,51 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { LoadScript } from '@react-google-maps/api';
 import { MapPin, Phone } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const CommuteCargoPickupNavigation = () => {
   const [estimatedTime, setEstimatedTime] = useState('15 min');
   const [distance, setDistance] = useState('3.2 km');
   const router = useRouter();
+  const [user, setUser] = useState({ name: '' });
+  const [UserPickup, setUserPickup] = useState({   
+    pickupLocation: '',
+    deliveryLocation: '',
+    preferredTime: '',
+    cargoSize: '',
+  });
+
+  useEffect(() => {
+    const userPickupData = getUserPickupData();
+    const userData = getStoredUserData();
+    if (userPickupData && userData) {
+      setUserPickup(userPickupData);
+      setUser(userData)
+      console.log('ユーザー情報を取得しました', userPickupData)
+      console.log('ユーザー名', userData.name) 
+    } else {
+      console.error("ユーザー情報が見つかりませんでした");
+    }
+  }, []);
+
+  const getStoredUserData = () => {
+    if (typeof window !== 'undefined') {
+      const storedData = localStorage.getItem('userData');
+      return storedData ? JSON.parse(storedData) : null;
+    }
+    return null;
+  };
+
+  const getUserPickupData = () => {
+    if (typeof window !== 'undefined') {
+      const storedData = localStorage.getItem('userPickupData');
+      return storedData ? JSON.parse(storedData) : null;
+    }
+    return null;
+  };
+
   // Mock pickup details
   const pickupDetails = {
-    address: '1-1-2 Otemachi, Chiyoda-ku, Tokyo',
-    customerName: 'Tanaka Yuki',
     phoneNumber: '090-1234-5678',
   };
 
@@ -35,12 +70,12 @@ const CommuteCargoPickupNavigation = () => {
         <h2 className="text-xl font-bold flex-grow">Navigate to Pickup</h2>
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col">
-        <div className="bg-gray-100 rounded-lg p-4 mb-4">
+        <div className="bg-gray-100 rounded-lg p-2 mb-4">
           <h3 className="font-semibold mb-2 flex items-center">
             <MapPin className="h-5 w-5 mr-2 text-red-500" />
             Pickup Location
           </h3>
-          <p>{pickupDetails.address}</p>
+          <p>{UserPickup.pickupLocation}</p>
         </div>
 
         <LoadScript
@@ -48,12 +83,12 @@ const CommuteCargoPickupNavigation = () => {
         language="en"
         region="US"
         >
-          <Map /> 
+          <Map originCity="Stamford, CT" destinationCity="New York City" />
         </LoadScript>
 
         <div className="bg-green-100 rounded-lg p-4 mb-4">
           <h3 className="font-semibold mb-2">Customer Details</h3>
-          <p>{pickupDetails.customerName}</p>
+          <p>{user.name}</p>
           <div className="flex items-center mt-2">
             <Phone className="h-5 w-5 mr-2 text-green-500" />
             <a href={`tel:${pickupDetails.phoneNumber}`} className="text-blue-500 underline">

@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Clock, MapPin, Package, Truck } from 'lucide-react';
+import { Clock, MapPin, Package, Truck } from 'lucide-react';
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 // import { Bell, Package, Truck, User } from 'lucide-react';
 
 const CommuteCargaDeliveryRequest = () => {
@@ -16,42 +16,52 @@ const CommuteCargaDeliveryRequest = () => {
     const [user, setUser] = useState({ name: '', image: '' });
     const router = useRouter();
 
-
     useEffect(() => {
-        // ユーザーIDを適宜取得してfetchUserProfileを呼び出す
-        const userId = "user123"; // ここは実際のユーザーIDに置き換える
-        fetchUserProfile(userId);
+      const userData = getStoredUserData();
+      if (userData) {
+        setUser(userData);
+        console.log('ユーザー情報を取得しました', userData)
+      } else {
+        console.error("ユーザー情報が見つかりませんでした");
+      }
     }, []);
+
+    const getStoredUserData = () => {
+      if (typeof window !== 'undefined') {
+        const storedData = localStorage.getItem('userData');
+        return storedData ? JSON.parse(storedData) : null;
+      }
+      return null;
+    };
+    
   
     const handleRequestDelivery = (e) => {
       e.preventDefault();
+      const userPickupData = {
+        pickupLocation : pickupLocation,
+        deliveryLocation: deliveryLocation,
+        preferredTime: preferredTime,
+        cargoSize: cargoSize
+      };
+      localStorage.setItem('userPickupData', JSON.stringify(userPickupData));
       console.log('Delivery Request:', { pickupLocation, deliveryLocation, preferredTime, cargoSize });
       router.push("/user-choose-driver");
     };
   
     const handleRegisterAsDriver = () => {
       console.log('Navigate to Driver Registration screen');
-      router.push("/register-driver");
-    };
-
-    const fetchUserProfile = async (userId) => {
-        try {
-          const response = await fetch(`http://127.0.0.1:3001/api/user/profile?id=${userId}`);
-          const data = await response.json();
-          console.log(data)
-          setUserProfile(data);
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-        }
+      router.push("/driver-registation");
     };
   
     return (
       <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
         <CardHeader className="bg-red-500 text-white flex items-center p-4">
-          <ArrowLeft className="h-6 w-6 mr-4" />
           <h2 className="text-xl font-bold flex-grow">Request Delivery</h2>
           <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
             <img src={user.image || "/api/placeholder/40/40"} alt="Profile" className="w-full h-full object-cover" />
+          </div>
+          <div className="mb-4">
+            <p className="font-semibold">{user.name || 'User'}</p>
           </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow flex flex-col">

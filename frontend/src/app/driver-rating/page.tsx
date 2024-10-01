@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
-import { ArrowLeft, Star, Send } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { Send, Star } from 'lucide-react';
+import { useState } from 'react';
 
 const CommuteCargaDriverRating = () => {
   const [rating, setRating] = useState(0);
@@ -22,7 +22,6 @@ const CommuteCargaDriverRating = () => {
   return (
     <Card className="w-full max-w-md mx-auto h-screen flex flex-col">
       <CardHeader className="bg-red-500 text-white flex items-center p-4">
-        <ArrowLeft className="h-6 w-6 mr-4" />
         <h2 className="text-xl font-bold flex-grow">Rate Your Driver</h2>
         <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden">
           <img src="/api/placeholder/40/40" alt="Profile" className="w-full h-full object-cover" />

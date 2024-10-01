@@ -8,32 +8,58 @@ import {
   useJsApiLoader
 } from '@react-google-maps/api';
 import { Clock, Navigation } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const mapContainerStyle = {
   width: '100%',
   height: '400px',
 };
 
-const center = {
-  lat: 40.7128,
-  lng: -74.0060, // New York City center
-};
+interface MapProps {
+  originCity: string;
+  destinationCity: string;
+}
 
 const libraries: ("places" | "geometry" | "drawing" | "visualization")[] = ["places"];
 
 
-const Map: React.FC<MapProps> = () => {
+const Map: React.FC<MapProps>  = ({ originCity, destinationCity }) => {
   const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
   const [distance, setDistance] = useState<string>('');
   const [estimatedTime, setEstimatedTime] = useState<string>('');
+  const [origin, setOrigin] = useState<google.maps.LatLngLiteral | null>(null);
+  const [destination, setDestination] = useState<google.maps.LatLngLiteral | null>(null);
+  const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: 0, lng: 0 });
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "",
     libraries,
   });
 
-  const origin = { lat: 41.0534, lng: -73.5387 }; // Stamford, CT
-  const destination = { lat: 40.7128, lng: -74.0060 }; // New York City
+  useEffect(() => {
+    if (isLoaded) {
+      const geocoder = new google.maps.Geocoder();
+      
+      geocoder.geocode({ address: originCity }, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK && results[0]) {
+          const location = {
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng(),
+          };
+          setOrigin(location);
+          setCenter(location);  // Set initial center to origin
+        }
+      });
+
+      geocoder.geocode({ address: destinationCity }, (results, status) => {
+        if (status === google.maps.GeocoderStatus.OK && results[0]) {
+          setDestination({
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng(),
+          });
+        }
+      });
+    }
+  }, [isLoaded, originCity, destinationCity]);
 
   const directionsCallback = useCallback((
     result: google.maps.DirectionsResult | null,
@@ -95,7 +121,7 @@ const Map: React.FC<MapProps> = () => {
           )}
         </GoogleMap>
       </div>
-      <div className="bg-blue-100 rounded-lg p-4 mb-4">
+      <div className="bg-blue-100 rounded-lg p-3 mb-4">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
             <Navigation className="h-5 w-5 mr-2 text-blue-500" />

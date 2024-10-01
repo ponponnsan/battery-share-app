@@ -1,17 +1,50 @@
 "use client";
-import React, { useState } from 'react';
-import { Check, Star, MapPin, Package, Clock, User } from 'lucide-react';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { useRouter } from "next/navigation";
 import Popup from '@/components/popup/popup';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Check, Clock, Package, Star, User } from 'lucide-react';
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from 'react';
 
 const CommuteCargaUserDeliveryRating = () => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [showPopup, setShowPopup] = useState(false);
   const router = useRouter();
+
+  const [driverData, setdriverData] = useState({   
+    photo: '',
+    name: '',
+    introduction: '',
+    fromLocation: '',
+    toLocation: '',
+    departureTime: '',
+    arrivalTime: '',
+    vehicleType: '',
+    cargoSpace:'' 
+  });
+
+  useEffect(() => {
+    const driverData = getdriverData();
+    if (driverData) {
+      setdriverData(driverData);
+      console.log('ドライバー情報を取得しました', driverData)
+      console.log('ユーザー名', driverData.name) 
+    } else {
+      console.error("ユーザー情報が見つかりませんでした");
+    }
+  }, []);
+
+
+  const getdriverData = () => {
+    if (typeof window !== 'undefined') {
+      const storedData = localStorage.getItem('driverData');
+      return storedData ? JSON.parse(storedData) : null;
+    }
+    return null;
+  };
+
 
   // Mock delivery details
   const deliveryDetails = {
@@ -54,23 +87,23 @@ const CommuteCargaUserDeliveryRating = () => {
             Your package has been delivered!
           </h3>
 
-          <div className="bg-gray-100 rounded-lg p-4 mb-6">
-            <div className="flex items-center mb-2">
-              <User className="h-5 w-5 mr-2 text-blue-500" />
-              <span className="font-semibold">Driver:</span>
-              <span className="ml-2">{deliveryDetails.driverName}</span>
-            </div>
-            <div className="flex items-center mb-2">
-              <Package className="h-5 w-5 mr-2 text-purple-500" />
-              <span className="font-semibold">Package:</span>
-              <span className="ml-2">{deliveryDetails.cargoDescription}</span>
-            </div>
-            <div className="flex items-center">
-              <Clock className="h-5 w-5 mr-2 text-green-500" />
-              <span className="font-semibold">Delivered at:</span>
-              <span className="ml-2">{deliveryDetails.deliveryTime}</span>
-            </div>
+        <div className="bg-gray-100 rounded-lg p-4 mb-6">
+          <div className="flex items-center mb-2">
+            <User className="h-5 w-5 mr-2 text-blue-500" />
+            <span className="font-semibold">Driver:</span>
+            <span className="ml-2">{driverData.name}</span>
           </div>
+          <div className="flex items-center mb-2">
+            <Package className="h-5 w-5 mr-2 text-purple-500" />
+            <span className="font-semibold">Package:</span>
+            <span className="ml-2">{driverData.cargoSpace}</span>
+          </div>
+          <div className="flex items-center">
+            <Clock className="h-5 w-5 mr-2 text-green-500" />
+            <span className="font-semibold">Delivered at:</span>
+            <span className="ml-2">{deliveryDetails.deliveryTime}</span>
+          </div>
+        </div>
 
           <div className="mb-6">
             <h4 className="font-semibold mb-2">Rate your delivery experience:</h4>

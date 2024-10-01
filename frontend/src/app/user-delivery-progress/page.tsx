@@ -5,23 +5,41 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { LoadScript } from '@react-google-maps/api';
 import { MapPin, MessageCircle, Package, Phone, User } from 'lucide-react';
-import { useRouter } from "next/navigation"; // useRouter を追加
 import { useEffect, useState } from 'react';
 
 const CommuteCargaUserDeliveryProgress = () => {
   const [status, setStatus] = useState('In Transit');
   const [estimatedArrival, setEstimatedArrival] = useState('15 min');
   const [showPopup, setShowPopup] = useState(false);
-  const router = useRouter(); // useRouter のインスタンスを取得
+  const [DriverInfo, setDriverInfo] = useState({   
+    photo: '',
+    name: '',
+    introduction: '',
+    fromLocation: '',
+    toLocation: '',
+    departureTime: '',
+    arrivalTime: '',
+    vehicleType: '',
+    cargoSpace: '', });
 
-  // Mock delivery details
-  const deliveryDetails = {
-    driverName: 'Tanaka Yuki',
-    driverPhone: '090-1234-5678',
-    cargoDescription: 'Medium-sized package',
-    pickupLocation: '1-1-2 Otemachi, Chiyoda-ku, Tokyo',
-    deliveryLocation: '2-1-1 Nihonbashi, Chuo-ku, Tokyo',
-  };
+
+useEffect(() => {
+  const driverData = getStoredDriverData();
+  if (driverData) {
+    setDriverInfo(driverData);
+    console.log('ドライバー情報を取得しました', driverData)
+  } else {
+    console.error("ユーザー情報が見つかりませんでした");
+  }
+}, []);
+
+const getStoredDriverData = () => {
+  if (typeof window !== 'undefined') {
+    const storedData = localStorage.getItem('driverData');
+    return storedData ? JSON.parse(storedData) : null;
+  }
+  return null;
+};
 
   // Mock vehicles details
   // const vehicles = [
@@ -76,9 +94,9 @@ const CommuteCargaUserDeliveryProgress = () => {
               <User className="h-5 w-5 mr-2 text-blue-500" />
               Driver Information
             </h3>
-            {deliveryDetails ? (
+            {DriverInfo ? (
               <>
-                <p>{deliveryDetails.driverName}</p>
+                <p>{DriverInfo.name}</p>
                 <div className="flex mt-2 space-x-2">
                   <Button size="sm" variant="outline" onClick={handleContact}>
                     <Phone className="h-4 w-4 mr-1" />
@@ -96,21 +114,21 @@ const CommuteCargaUserDeliveryProgress = () => {
           </div>
 
           <div className="space-y-4">
-            {deliveryDetails ? (
+            {DriverInfo ? (
               <>
                 <div>
                   <h3 className="font-semibold mb-2 flex items-center">
                     <Package className="h-5 w-5 mr-2 text-purple-500" />
                     Package Details
                   </h3>
-                  <p>{deliveryDetails.cargoDescription}</p>
+                  <p>{DriverInfo.cargoSpace}</p>
                 </div>
                 <div>
                   <h3 className="font-semibold mb-2 flex items-center">
                     <MapPin className="h-5 w-5 mr-2 text-green-500" />
                     Delivery Location
                   </h3>
-                  <p>{deliveryDetails.deliveryLocation}</p>
+                  <p>{DriverInfo.fromLocation}</p>
                 </div>
               </>
             ) : (
