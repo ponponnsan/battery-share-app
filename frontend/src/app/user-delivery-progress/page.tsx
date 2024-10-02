@@ -1,16 +1,22 @@
 "use client";
 import MapComponent from "@/components/maps/open-maps";
-import Popup from '@/components/popup/popup';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { LoadScript } from '@react-google-maps/api';
+// import { LoadScript } from '@react-google-maps/api';
+import { RoutePoint } from '@/types';
 import { MapPin, MessageCircle, Package, Phone, User } from 'lucide-react';
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
 
+
 const CommuteCargaUserDeliveryProgress = () => {
+  const router = useRouter();
   const [status, setStatus] = useState('In Transit');
   const [estimatedArrival, setEstimatedArrival] = useState('15 min');
+  const [startPoint, setStartPoint] = useState<RoutePoint | null>(null);
+  const [endPoint, setEndPoint] = useState<RoutePoint | null>(null);
   const [showPopup, setShowPopup] = useState(false);
+  
   const [DriverInfo, setDriverInfo] = useState({   
     photo: '',
     name: '',
@@ -22,36 +28,46 @@ const CommuteCargaUserDeliveryProgress = () => {
     vehicleType: '',
     cargoSpace: '', });
 
+//   // const DynamicMapComponent = dynamic(() => import('@/components/maps/open-maps'), {
+//   //   ssr: false, // サーバーサイドレンダリングを無効にする
+//   // });
 
-useEffect(() => {
-  const driverData = getStoredDriverData();
-  if (driverData) {
-    setDriverInfo(driverData);
-    console.log('ドライバー情報を取得しました', driverData)
-  } else {
-    console.error("ユーザー情報が見つかりませんでした");
-  }
-}, []);
+  useEffect(() => {
+    const driverData = getStoredDriverData();
+    if (driverData) {
+      setDriverInfo(driverData);
+      console.log('ドライバー情報を取得しました', driverData)
+    } else {
+      console.error("ユーザー情報が見つかりませんでした");
+    }
+  }, []);
 
-const getStoredDriverData = () => {
-  if (typeof window !== 'undefined') {
-    const storedData = localStorage.getItem('driverData');
-    return storedData ? JSON.parse(storedData) : null;
-  }
-  return null;
-};
+  const getStoredDriverData = () => {
+    if (typeof window !== 'undefined') {
+      const storedData = localStorage.getItem('driverData');
+      return storedData ? JSON.parse(storedData) : null;
+    }
+    return null;
+  };
 
-  // Mock vehicles details
-  // const vehicles = [
-  //   { lat: 35.6762, lng: 139.6503 },
-  //   { lat: 35.6895, lng: 139.6917 },
-  // ];
+  useEffect(() => {
+    // nagoya
+    setStartPoint({ lat: 35.18028, lng: 136.90667 });
+    // tokyo
+    setEndPoint({ lat: 35.68944, lng: 139.69167 });
+  }, []); // 初回レンダリング時のみ実行
+
+//   // Mock vehicles details
+//   // const vehicles = [
+//   //   { lat: 35.6762, lng: 139.6503 },
+//   //   { lat: 35.6895, lng: 139.6917 },
+//   // ];
 
   // Simulating status updates
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowPopup(true);
-    }, 5000); // 3秒後にポップアップを表示
+    }, 3000); // 3秒後にポップアップを表示
 
     return () => clearTimeout(timer); // クリーンアップ
   }, []);
@@ -81,13 +97,13 @@ const getStoredDriverData = () => {
           </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow flex flex-col">
-          <LoadScript
+          {/* <LoadScript
             googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
             language="en"
             region="US"
-          >
-            <MapComponent />
-          </LoadScript>
+          > */}
+          <MapComponent start={startPoint} end={endPoint} />
+          {/* </LoadScript */}
 
           <div className="bg-white rounded-lg shadow-md p-4 mb-4">
             <h3 className="font-semibold mb-2 flex items-center">
@@ -138,14 +154,14 @@ const getStoredDriverData = () => {
         </CardContent>
       </Card>
 
-      {showPopup && (
-        <Popup
-          message="Delivery is complete!"
-          onClose={handleClosePopup}
-          onComplete={handleCompleteDelivery}
-        />
-      )}
-    </div>
+       {/* {showPopup && (
+         <Popup
+           message="Delivery is complete!"
+           onClose={handleClosePopup}
+           onComplete={handleCompleteDelivery}
+         />
+       )} */}
+     </div>
   );
 };
 
