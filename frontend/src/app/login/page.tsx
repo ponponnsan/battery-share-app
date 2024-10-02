@@ -41,7 +41,7 @@ const LoginPage = () => {
       localStorage.setItem('userData', JSON.stringify(userData));
       
       // TOPページにリダイレクト
-      router.push("/driver-registation");
+      router.push("/request-delivery");
     }
   }, [session, status, router]);
 
