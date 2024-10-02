@@ -1,5 +1,5 @@
 "use client";
-import Map from "@/components/maps/google-map";
+import MapComponent from "@/components/maps/open-maps";
 import Popup from '@/components/popup/popup';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -86,7 +86,7 @@ const getStoredDriverData = () => {
             language="en"
             region="US"
           >
-            <Map />
+            <MapComponent />
           </LoadScript>
 
           <div className="bg-white rounded-lg shadow-md p-4 mb-4">
