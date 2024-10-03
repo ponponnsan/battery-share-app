@@ -3,6 +3,7 @@ import MapComponent from "@/components/maps/open-maps";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 // import { LoadScript } from '@react-google-maps/api';
+// import Popup from "@/components/popup/popup";
 import { RoutePoint } from '@/types';
 import { MapPin, MessageCircle, Package, Phone, User } from 'lucide-react';
 import { useRouter } from "next/navigation";
@@ -97,14 +98,9 @@ const CommuteCargaUserDeliveryProgress = () => {
           </div>
         </CardHeader>
         <CardContent className="p-4 flex-grow flex flex-col">
-          {/* <LoadScript
-            googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
-            language="en"
-            region="US"
-          > */}
+          <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative">
           <MapComponent start={startPoint} end={endPoint} />
-          {/* </LoadScript */}
-
+          </div>
           <div className="bg-white rounded-lg shadow-md p-4 mb-4">
             <h3 className="font-semibold mb-2 flex items-center">
               <User className="h-5 w-5 mr-2 text-blue-500" />

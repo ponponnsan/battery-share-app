@@ -1,6 +1,5 @@
-import React from 'react';
 import { Check } from 'lucide-react'; // Check アイコンをインポート
-import { useRouter } from "next/navigation";
+import React from 'react';
 
 interface PopupProps {
   message: string;
@@ -10,7 +9,8 @@ interface PopupProps {
 
 const Popup: React.FC<PopupProps> = ({ message, onClose, onComplete }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50"
+        style={{ zIndex: 1000 }}>
       <div className="bg-white text-gray-800 rounded-lg p-6 shadow-lg max-w-sm w-full mx-4">
         <h3 className="font-semibold text-lg text-center mb-2">Notification</h3>
         <div className="flex justify-center items-center my-6">
