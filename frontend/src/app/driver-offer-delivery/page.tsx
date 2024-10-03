@@ -35,7 +35,7 @@ const CommuteCargaDriverOfferScreen = () => {
 
   const handleAccept = () => {
     console.log('Offer accepted');
-    router.push("/pickup"); 
+    router.push("/driver-pickup"); 
 
   };
 

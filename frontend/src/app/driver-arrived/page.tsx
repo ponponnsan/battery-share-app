@@ -1,8 +1,7 @@
 "use client";
-import Map from "@/components/maps/google-map";
+import MapComponent from "@/components/maps/open-maps";
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { LoadScript } from '@react-google-maps/api';
 import { MapPin, Package, Phone } from 'lucide-react';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from 'react';
@@ -11,6 +10,8 @@ const CommuteCargaDeliveryNavigation = () => {
   const [estimatedTime, setEstimatedTime] = useState('25 min');
   const [distance, setDistance] = useState('7.5 km');
   const router = useRouter();
+  const [startPoint, setStartPoint] = useState<RoutePoint | null>(null);
+  const [endPoint, setEndPoint] = useState<RoutePoint | null>(null);
 
   const [user, setUser] = useState({ name: '' });
   const [UserPickup, setUserPickup] = useState({   
@@ -32,6 +33,13 @@ const CommuteCargaDeliveryNavigation = () => {
       console.error("ユーザー情報が見つかりませんでした");
     }
   }, []);
+
+  useEffect(() => {
+    // nagoya
+    setStartPoint({ lat: 35.18028, lng: 136.90667 });
+    // tokyo
+    setEndPoint({ lat: 35.68944, lng: 139.69167 });
+  }, []); // 初回レンダリング時のみ実行
 
   const getStoredUserData = () => {
     if (typeof window !== 'undefined') {
@@ -72,7 +80,7 @@ const CommuteCargaDeliveryNavigation = () => {
         <h2 className="text-xl font-bold flex-grow">Navigate to Delivery</h2>
       </CardHeader>
       <CardContent className="p-4 flex-grow flex flex-col">
-        <div className="bg-gray-100 rounded-lg p-2 mb-4">
+        <div className="bg-gray-100 rounded-lg p-3 mb-3">
           <h3 className="font-semibold mb-2 flex items-center">
             <MapPin className="h-5 w-5 mr-2 text-red-500" />
             Delivery Location
@@ -80,15 +88,9 @@ const CommuteCargaDeliveryNavigation = () => {
           <p>{UserPickup.deliveryLocation}</p>
         </div>
 
-        <LoadScript
-        googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
-        language="en"
-        region="US"
-        >
-          <Map /> 
-        </LoadScript>
+          <MapComponent start={startPoint} end={endPoint} />
 
-        <div className="bg-green-100 rounded-lg p-2 mb-4">
+        <div className="bg-green-100 rounded-lg p-2 mb-2">
           <h3 className="font-semibold mb-2">Customer Details</h3>
           <p>{user.name}</p>
           <div className="flex items-center mt-2">
@@ -99,7 +101,7 @@ const CommuteCargaDeliveryNavigation = () => {
           </div>
         </div>
 
-        <div className="bg-yellow-100 rounded-lg p-2 mb-4">
+        <div className="bg-yellow-100 rounded-lg p-2 mb-2">
           <h3 className="font-semibold mb-2 flex items-center">
             <Package className="h-5 w-5 mr-2 text-yellow-500" />
             Cargo Details
