@@ -50,7 +50,7 @@ const CommuteCargaDeliveryRequest = () => {
   
     const handleRegisterAsDriver = () => {
       console.log('Navigate to Driver Registration screen');
-      router.push("/driver-registation");
+      router.push("/driver-registration");
     };
   
     return (
