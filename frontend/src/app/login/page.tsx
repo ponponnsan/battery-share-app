@@ -14,7 +14,21 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
+<<<<<<< HEAD
       handleAuthenticatedUser();
+=======
+      // セッション情報をローカルストレージに保存
+      const userData = {
+        id : session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+        image: session.user.image
+      };
+      localStorage.setItem('userData', JSON.stringify(userData));
+      
+      // TOPページにリダイレクト
+      router.push("/request-delivery");
+>>>>>>> main
     }
   }, [session, status, router]);
 

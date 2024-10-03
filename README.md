@@ -13,13 +13,4 @@ commute-cargo-app/
 │   │   ├── app/
 │   │   ├── components/
 │   │   └── lib/
-├── backend/
-│   ├── src/
-│   │   ├── db/
-│   ├── node_modules/
-├── blockchain/
-│   ├── programs/
-│   │   └── battery_sharing/
-│   ├── tests/
-│   └── scripts/
 ```
