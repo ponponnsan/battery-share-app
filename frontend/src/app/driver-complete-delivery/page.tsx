@@ -41,7 +41,7 @@ const CommuteCargaDeliveryCompletion = () => {
     recipientName: 'Sato Hana',
     cargoDescription: 'Medium-sized package',
     deliveryTime: '14:30',
-    earnings: '¥1,500',
+    earnings: '0.1 SOL',
   };
 
   
