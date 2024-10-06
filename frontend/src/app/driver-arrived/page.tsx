@@ -14,7 +14,7 @@ const CommuteCargaDeliveryNavigation = () => {
   const [endPoint, setEndPoint] = useState<RoutePoint | null>(null);
 
   const [user, setUser] = useState({ name: '' });
-  const [UserPickup, setUserPickup] = useState({   
+  const [UserPickup, setUserPickup] = useState({
     pickupLocation: '',
     deliveryLocation: '',
     preferredTime: '',
@@ -28,17 +28,17 @@ const CommuteCargaDeliveryNavigation = () => {
       setUserPickup(userPickupData);
       setUser(userData)
       console.log('ユーザー情報を取得しました', userPickupData)
-      console.log('ユーザー名', userData.name) 
+      console.log('ユーザー名', userData.name)
     } else {
       console.error("ユーザー情報が見つかりませんでした");
     }
   }, []);
 
   useEffect(() => {
-    // nagoya
-    setStartPoint({ lat: 35.18028, lng: 136.90667 });
-    // tokyo
-    setEndPoint({ lat: 35.68944, lng: 139.69167 });
+    // San Francisco International Airport
+    setStartPoint({ lat: 37.6213, lng: -122.3790 });
+    // Stanford University
+    setEndPoint({ lat: 37.4275, lng: -122.1697 });
   }, []); // 初回レンダリング時のみ実行
 
   const getStoredUserData = () => {
@@ -109,7 +109,7 @@ const CommuteCargaDeliveryNavigation = () => {
           <p>{UserPickup.cargoSize}</p>
         </div>
 
-        <Button 
+        <Button
           onClick={handleDelivered}
           className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
         >

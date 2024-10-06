@@ -89,7 +89,7 @@ const MapComponent: React.FC<MapComponentProps> = ({ start, end }) => {
     <div className="flex flex-col space-y-1  mb-4" style={{ height: '55vh' }}> {/* 画面全体の高さを確保 */}
       <div className="flex-grow bg-gray-200 rounded-lg mb-4 relative" style={{ height: '80%' }}>
         <MapContainer
-          center={[35.6895, 139.6917]} // Tokyo
+          center={[37.4275, -122.1697]} // スタンフォード大学
           zoom={13}
           style={{ height: '100%', width: '100%' }} // 90%の高さを指定
         >
