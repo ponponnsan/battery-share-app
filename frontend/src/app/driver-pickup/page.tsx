@@ -13,7 +13,7 @@ const CommuteCargoPickupNavigation = () => {
   const [startPoint, setStartPoint] = useState<RoutePoint | null>(null);
   const [endPoint, setEndPoint] = useState<RoutePoint | null>(null);
   const [user, setUser] = useState({ name: '' });
-  const [UserPickup, setUserPickup] = useState({   
+  const [UserPickup, setUserPickup] = useState({
     pickupLocation: '',
     deliveryLocation: '',
     preferredTime: '',
@@ -27,17 +27,17 @@ const CommuteCargoPickupNavigation = () => {
       setUserPickup(userPickupData);
       setUser(userData)
       console.log('ユーザー情報を取得しました', userPickupData)
-      console.log('ユーザー名', userData.name) 
+      console.log('ユーザー名', userData.name)
     } else {
       console.error("ユーザー情報が見つかりませんでした");
     }
   }, []);
 
   useEffect(() => {
-    // nagoya
-    setStartPoint({ lat: 35.18028, lng: 136.90667 });
-    // tokyo
-    setEndPoint({ lat: 35.68944, lng: 139.69167 });
+    // San Francisco International Airport
+    setStartPoint({ lat: 37.6213, lng: -122.3790 });
+    // Stanford University
+    setEndPoint({ lat: 37.4275, lng: -122.1697 });
   }, []); // 初回レンダリング時のみ実行
 
   const getStoredUserData = () => {
@@ -56,9 +56,9 @@ const CommuteCargoPickupNavigation = () => {
     return null;
   };
 
-  // Mock pickup details
+  // ピックアップ詳細のモックデータ
   const pickupDetails = {
-    phoneNumber: '090-1234-5678',
+    phoneNumber: '(555) 123-4567',
   };
 
   const handleArrived = () => {
@@ -66,10 +66,10 @@ const CommuteCargoPickupNavigation = () => {
     router.push("/driver-arrived");
   };
 
-  // Mock vehicles details
+  // 車両のモックデータ
   const vehicles = [
-    { lat: 35.6762, lng: 139.6503 },
-    { lat: 35.6895, lng: 139.6917 },
+    { lat: 37.6191145, lng: -122.3816274 },
+    { lat: 37.42766, lng: -122.17006 },
   ];
 
   return (
@@ -86,21 +86,20 @@ const CommuteCargoPickupNavigation = () => {
           <p>{UserPickup.pickupLocation}</p>
         </div>
 
-          <MapComponent start={startPoint} end={endPoint} />
-          
-          <div className="bg-green-100 rounded-lg p-4 mb-4">
-            <h3 className="font-semibold mb-2">Customer Details</h3>
-            <p>{user.name}</p>
-            <div className="flex items-center mt-2">
-              <Phone className="h-5 w-5 mr-2 text-green-500" />
-              <a href={`tel:${pickupDetails.phoneNumber}`} className="text-blue-500 underline">
-                {pickupDetails.phoneNumber}
-              </a>
-            </div>
-          </div>
-        
+        <MapComponent start={startPoint} end={endPoint} />
 
-        <Button 
+        <div className="bg-green-100 rounded-lg p-4 mb-4">
+          <h3 className="font-semibold mb-2">Customer Details</h3>
+          <p>{user.name}</p>
+          <div className="flex items-center mt-2">
+            <Phone className="h-5 w-5 mr-2 text-green-500" />
+            <a href={`tel:${pickupDetails.phoneNumber}`} className="text-blue-500 underline">
+              {pickupDetails.phoneNumber}
+            </a>
+          </div>
+        </div>
+
+        <Button
           onClick={handleArrived}
           className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg"
         >
