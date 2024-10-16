@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import * as web3 from '@solana/web3.js';
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -11,26 +12,11 @@ const LoginPage = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   // ログイン済みの場合はTOPページにリダイレクト
-  //   if (status === "authenticated") {
-  //     redirect("/request-delivery");
-  //   }
-  // }, [session, status]);
-
-  // const handleGmailLogin = (provider: string) => async (event: React.MouseEvent) => {
-  //   event.preventDefault();
-  //   const result = await signIn(provider);
-
-  //   // ログインに成功したらTOPページにリダイレクト
-  //   if (result) {
-  //     redirect("/request-delivery");
-  //   }
-  // };
-
-
   useEffect(() => {
     if (status === "authenticated" && session?.user) {
+<<<<<<< HEAD
+      handleAuthenticatedUser();
+=======
       // セッション情報をローカルストレージに保存
       const userData = {
         id : session.user.id,
@@ -42,34 +28,80 @@ const LoginPage = () => {
       
       // TOPページにリダイレクト
       router.push("/request-delivery");
+>>>>>>> main
     }
   }, [session, status, router]);
+
+  const handleAuthenticatedUser = async () => {
+    const userData = {
+      id: session.user.id,
+      name: session.user.name,
+      email: session.user.email,
+      image: session.user.image
+    };
+
+    // ローカルストレージからユーザー情報を取得
+    const storedUserData = localStorage.getItem('userData');
+    if (!storedUserData) {
+      // 新規ユーザーの場合、Solanaアカウントを発行
+      const solanaAccount = await createSolanaAccount();
+      
+      // ユーザー情報とSolanaアカウント情報をローカルストレージに保存
+      const userDataWithSolana = {
+        ...userData,
+        solanaPublicKey: solanaAccount.publicKey.toString(),
+        solanaPrivateKey: Array.from(solanaAccount.secretKey) // Uint8Arrayを通常の配列に変換
+      };
+      localStorage.setItem('userData', JSON.stringify(userDataWithSolana));
+      
+      console.log('New Solana account created and stored');
+    } else {
+      console.log('Existing user data found in local storage');
+      // 既存のユーザーデータを更新（必要に応じて）
+      const existingData = JSON.parse(storedUserData);
+      const updatedData = { ...existingData, ...userData };
+      localStorage.setItem('userData', JSON.stringify(updatedData));
+    }
+    
+    // TOPページにリダイレクト
+    router.push("/request-delivery");
+  };
+
+  const createSolanaAccount = async () => {
+    const connection = new web3.Connection(web3.clusterApiUrl('devnet'));
+    const account = web3.Keypair.generate();
+    
+    try {
+      // airdropリクエストを1回だけ試行
+      // ただ、(Too Many Requests)は依然としてエラーは発生しているが、動いているのでよしとしている。
+      // おそらく、airdropの機能を実装しなかったらエラーは出なくなると思うが、そうするとsolanaの残高がなくなるので、この機能を実装している。
+      const airdropSignature = await connection.requestAirdrop(
+        account.publicKey,
+        web3.LAMPORTS_PER_SOL
+      );
+      
+      // トランザクションの確認を待つ（タイムアウト付き）
+      await connection.confirmTransaction(airdropSignature, 'confirmed');
+      console.log('Airdrop successful');
+    } catch (error) {
+      console.warn('Airdrop failed, but account creation continues:', error);
+      // airdropが失敗してもアカウント作成は続行
+    }
+
+    return account;
+  };
+
 
   const handleGmailLogin = (provider: string) => async (event: React.MouseEvent) => {
     event.preventDefault();
     const result = await signIn(provider);
 
     // ログインに成功したらTOPページにリダイレクト
-    if (result) {
-      router.push("/request-delivery");
-    }
+    // if (result) {
+    //   router.push("/request-delivery");
+    // }
   };
 
-  // ローカルストレージからユーザー情報を取得する関数
-  // const getStoredUserData = () => {
-  //   if (typeof window !== 'undefined') {
-  //     const storedData = localStorage.getItem('userData');
-  //     return storedData ? JSON.parse(storedData) : null;
-  //   }
-  //   return null;
-  // };
-
-  // ローカルストレージからユーザー情報を削除する関数（ログアウト時に使用）
-  // const clearStoredUserData = () => {
-  //   if (typeof window !== 'undefined') {
-  //     localStorage.removeItem('userData');
-  //   }
-  // };
 
 
   return (
